@@ -1,0 +1,23 @@
+{
+  "name": "medikamentenausgabe",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "react-native start",
+    "prebuild": "expo prebuild",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios --simulator=\"iPhone 14\""
+  },
+  "dependencies": {
+    "expo": "~48.0.15",
+    "expo-status-bar": "~1.4.4",
+    "react": "18.2.0",
+    "react-native": "0.71.7",
+    "expo-splash-screen": "~0.18.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@types/react": "~18.0.14",
+    "typescript": "^4.9.4"
+  },
+  "private": true
+}
