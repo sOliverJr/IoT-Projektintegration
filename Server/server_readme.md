@@ -14,7 +14,8 @@ gerät: {
 ### Kassetten-Objekt
 ```
 kassette: {
-    id: String,
-    einnahmefrequenz: IntegerArray[] (Einnahmeuhreiten) (Zweidimensional??)
+    cassette_id: String,
+    einnahme_frequenz: Integer,
+    einnahme_uhrzeiten: IntegerArray[] (800, 1300, 1530, ...)
 }
 ```
