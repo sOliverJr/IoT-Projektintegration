@@ -1,6 +1,7 @@
 from database.database_connector import *
 from hash.sha256 import *
 
+
 # ------------------ Devices ------------------ #
 device_handler = DeviceHandler()
 
@@ -16,6 +17,9 @@ device = {
     'device_cassette': device_cassette
 }
 
+print(device_handler.add_device(device))
+
+
 # ------------------ Cassettes ------------------ #
 cassette_handler = CassetteHandler()
 
@@ -29,11 +33,4 @@ cassette = {
     'einnahme_uhrzeiten': einnahme_uhrzeiten
 }
 
-# print(cassette_handler.add_cassette(cassette))
-# print(device_handler.add_device(device))
-
-# print(device_handler.auth_app(test_device['device_id'], test_device['device_pwd']))
-# print(device_handler.change_device_cassette('cassette_1', test_device['device_id'], test_device['device_hash']))
-# print(hash_sha256_string('anderer Test'))
-
-# print(device_handler.change_device_cassette('cassette_1', device_id, device_hash))
+print(cassette_handler.add_cassette(cassette))
