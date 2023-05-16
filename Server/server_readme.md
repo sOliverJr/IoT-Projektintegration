@@ -1,7 +1,15 @@
-### Start docker-compose
+# Get started
+## Dependencies
+``pip install -r requirements.txt``
+
+## Start docker-compose
 ``sudo docker-compose up -d``
 
-### Geräte-Objekt
+## Start API
+``uvicorn main:backend --reload``
+
+# Datenstrukturen
+## Geräte-Objekt
 ```
 gerät: {
     device_id: String,
@@ -11,7 +19,7 @@ gerät: {
 }
 ```
 
-### Kassetten-Objekt
+## Kassetten-Objekt
 ```
 kassette: {
     cassette_id: String,

@@ -9,7 +9,7 @@ class DeviceHandler:
         self.cassette_collection = self.backend_db['cassettes']
 
     def test_connection(self):
-        print(self.client.list_database_names())
+        return self.client.list_database_names()
 
     def add_device(self, item):
         query = {'device_id': item['device_id']}
@@ -23,11 +23,11 @@ class DeviceHandler:
         query = {'device_id': device_id}
         device = self.device_collection.find_one(query, {'_id': 0})
         if device is None:
-            return 'No device with that ID'
+            return False, 'No device with that ID'
         elif device['device_pwd'] == device_pwd:
-            return device['device_hash']
+            return True, device['device_hash']
         else:
-            return 'ID and password do not match'
+            return False, 'ID and password do not match'
 
     def change_device_cassette(self, cassette_id, device_id, device_hash):
         query = {'device_id': device_id}
@@ -69,7 +69,7 @@ class CassetteHandler:
         self.cassette_collection = self.backend_db['cassettes']
 
     def test_connection(self):
-        print(self.client.list_database_names())
+        return self.client.list_database_names()
 
     def add_cassette(self, item):
         query = {'cassette_id': item['cassette_id']}
