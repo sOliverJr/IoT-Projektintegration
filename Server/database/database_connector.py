@@ -30,6 +30,7 @@ class DeviceHandler:
             return False, 'ID and password do not match'
 
     def change_device_cassette(self, cassette_id, device_id, device_hash):
+        """Changes the cassette of device in the database"""
         query = {'device_id': device_id}
         device = self.device_collection.find_one(query, {'_id': 0})
         if device is None:
@@ -60,6 +61,22 @@ class DeviceHandler:
             return False
         else:
             return True
+
+    def get_device_cassette(self, device_id):
+        """Returns cassette object of device"""
+        query = {'device_id': device_id}
+        device = self.device_collection.find_one(query, {'_id': 0})
+        if device is None:
+            return False, 'No device with that ID'
+        elif device['device_cassette'] is None:
+            return False, 'Device does not have an assigned cassette'
+        else:
+            query = {'cassette_id': device['device_cassette']}
+            cassette = self.cassette_collection.find_one(query, {'_id': 0})
+            if cassette is None:
+                return False, 'Cassette does not exist'
+            else:
+                return True, cassette
 
 
 class CassetteHandler:

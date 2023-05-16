@@ -19,3 +19,8 @@ async def auth_device(auth_request: AuthRequest):
 @backend.put('/change_cassette')
 async def change_cassette(auth_request: ChangeCassetteRequest):
     return route_service.change_cassette(auth_request)
+
+
+@backend.get('/get_current_cassette/{device_id}')
+async def get_device_cassette(device_id: str):
+    return route_service.get_device_cassette(device_id)

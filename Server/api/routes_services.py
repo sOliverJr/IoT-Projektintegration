@@ -27,3 +27,10 @@ class RouteServices:
             return server_response_content
         else:
             raise HTTPException(status_code=404, detail=server_response_content)
+
+    def get_device_cassette(self, device_id):
+        server_response_status_ok, server_response_content = self.device_db_handler.get_device_cassette(device_id)
+        if server_response_status_ok:
+            return server_response_content
+        else:
+            raise HTTPException(status_code=404, detail=server_response_content)
