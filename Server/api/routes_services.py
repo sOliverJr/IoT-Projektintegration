@@ -1,11 +1,6 @@
 from database.database_connector import DeviceHandler
-from pydantic import BaseModel
+from api.data_models import AuthRequest, ChangeCassetteRequest
 from fastapi import HTTPException
-
-
-class AuthRequest(BaseModel):
-    device_id: str
-    device_pwd: str
 
 
 class RouteServices:
@@ -19,4 +14,16 @@ class RouteServices:
         return 'Pong'
 
     def auth_device(self, auth_request: AuthRequest):
-        return self.device_db_handler.auth_app(auth_request.device_id, auth_request.device_pwd)
+        """Returns Auth-Hash if request is valid"""
+        server_response_status_ok, server_response_content = self.device_db_handler.auth_app(auth_request.device_id, auth_request.device_pwd)
+        if not server_response_status_ok:
+            raise HTTPException(status_code=404, detail=server_response_content)
+        else:
+            return server_response_content
+
+    def change_cassette(self, request: ChangeCassetteRequest):
+        server_response_status_ok, server_response_content = self.device_db_handler.change_device_cassette(request.cassette_id, request.device_id, request.device_hash)
+        if server_response_status_ok:
+            return server_response_content
+        else:
+            raise HTTPException(status_code=404, detail=server_response_content)

@@ -33,17 +33,17 @@ class DeviceHandler:
         query = {'device_id': device_id}
         device = self.device_collection.find_one(query, {'_id': 0})
         if device is None:
-            return 'No device with that ID'
+            return False, 'No device with that ID'
         elif device['device_hash'] == device_hash:
             if self.cassette_exists(cassette_id) and not self.cassette_already_allocated(cassette_id):
                 device['device_cassette'] = cassette_id
                 updated_device = {"$set": device}
                 self.device_collection.update_one(query, updated_device)
-                return True
+                return True, 'Success'
             else:
-                return 'Cassette does not exist or is already used by different device'
+                return False, 'Cassette does not exist or is already used by different device'
         else:
-            return 'ID and hash do not match'
+            return False, 'ID and hash do not match'
 
     def cassette_exists(self, cassette_id):
         """Tests if cassette exists"""
