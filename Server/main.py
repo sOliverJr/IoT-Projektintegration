@@ -12,15 +12,15 @@ async def ping():
 
 
 @backend.get('/auth_device')
-async def auth_device(auth_request: AuthRequest):
-    return route_service.auth_device(auth_request)
+async def auth_device(request: AuthRequest):
+    return route_service.auth_device(request)
 
 
 @backend.put('/change_cassette')
-async def change_cassette(auth_request: ChangeCassetteRequest):
-    return route_service.change_cassette(auth_request)
+async def change_cassette(request: ChangeCassetteRequest):
+    return route_service.change_cassette(request)
 
 
-@backend.get('/get_current_cassette/{device_id}')
-async def get_device_cassette(device_id: str):
-    return route_service.get_device_cassette(device_id)
+@backend.get('/get_current_cassette')
+async def get_device_cassette(request: GetCassetteRequest):
+    return route_service.get_device_cassette(request)

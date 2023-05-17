@@ -36,7 +36,7 @@ class DeviceHandler:
         if device is None:
             return False, 'No device with that ID'
         elif device['device_hash'] == device_hash:
-            if self.cassette_exists(cassette_id) and not self.cassette_already_allocated(cassette_id):
+            if self._cassette_exists(cassette_id) and not self._cassette_already_allocated(cassette_id):
                 device['device_cassette'] = cassette_id
                 updated_device = {"$set": device}
                 self.device_collection.update_one(query, updated_device)
@@ -46,7 +46,7 @@ class DeviceHandler:
         else:
             return False, 'ID and hash do not match'
 
-    def cassette_exists(self, cassette_id):
+    def _cassette_exists(self, cassette_id):
         """Tests if cassette exists"""
         query = {'cassette_id': cassette_id}
         if self.cassette_collection.find_one(query, {'_id': 0}) is None:
@@ -54,7 +54,7 @@ class DeviceHandler:
         else:
             return True
 
-    def cassette_already_allocated(self, cassette_id):
+    def _cassette_already_allocated(self, cassette_id):
         """Tests if cassette is already used by device"""
         query = {'device_cassette': cassette_id}
         if self.device_collection.find_one(query, {'_id': 0}) is None:
@@ -62,12 +62,14 @@ class DeviceHandler:
         else:
             return True
 
-    def get_device_cassette(self, device_id):
+    def get_device_cassette(self, device_id, device_hash):
         """Returns cassette object of device"""
         query = {'device_id': device_id}
         device = self.device_collection.find_one(query, {'_id': 0})
         if device is None:
             return False, 'No device with that ID'
+        elif device['device_hash'] != device_hash: # Authenticate request
+            return False, 'Device ID and hash do not match'
         elif device['device_cassette'] is None:
             return False, 'Device does not have an assigned cassette'
         else:

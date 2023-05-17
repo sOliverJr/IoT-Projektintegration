@@ -1,5 +1,5 @@
 from database.database_connector import DeviceHandler
-from api.data_models import AuthRequest, ChangeCassetteRequest
+from api.data_models import AuthRequest, ChangeCassetteRequest, GetCassetteRequest
 from fastapi import HTTPException
 
 
@@ -28,8 +28,8 @@ class RouteServices:
         else:
             raise HTTPException(status_code=404, detail=server_response_content)
 
-    def get_device_cassette(self, device_id):
-        server_response_status_ok, server_response_content = self.device_db_handler.get_device_cassette(device_id)
+    def get_device_cassette(self, request: GetCassetteRequest):
+        server_response_status_ok, server_response_content = self.device_db_handler.get_device_cassette(request.device_id, request.device_hash)
         if server_response_status_ok:
             return server_response_content
         else:

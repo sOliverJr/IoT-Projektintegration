@@ -12,3 +12,8 @@ class ChangeCassetteRequest(BaseModel):
     device_id: str
     device_hash: str
     cassette_id: str
+
+
+class GetCassetteRequest(BaseModel):
+    device_id: str
+    device_hash: str
