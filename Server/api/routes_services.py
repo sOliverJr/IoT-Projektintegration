@@ -1,12 +1,15 @@
-from database.database_connector import DeviceHandler
-from api.data_models import AuthRequest, ChangeCassetteRequest, GetCassetteRequest
+from database.database_connector import DeviceHandler, CassetteHandler
+from api.data_models import AuthRequest, ChangeCassetteRequest, GetCassetteRequest, UpdateCassetteRequest
 from fastapi import HTTPException
+from dotenv import load_dotenv
+import os
 
 
 class RouteServices:
     def __init__(self):
         self.device_db_handler = DeviceHandler()
-        self.test = 1
+        self.cassette_db_handler = CassetteHandler()
+        load_dotenv()
 
     @staticmethod
     def ping():
@@ -34,3 +37,13 @@ class RouteServices:
             return server_response_content
         else:
             raise HTTPException(status_code=404, detail=server_response_content)
+
+    def update_cassette(self, request: UpdateCassetteRequest):
+        if request.admin_key != os.getenv('ADMIN_KEY'):
+            raise HTTPException(status_code=404, detail='Invalid admin key')
+        server_response_status_ok, server_response_content = self.cassette_db_handler.update_cassette(request.cassette_id, request.cassette)
+        if server_response_status_ok:
+            return server_response_content
+        else:
+            raise HTTPException(status_code=404, detail=server_response_content)
+

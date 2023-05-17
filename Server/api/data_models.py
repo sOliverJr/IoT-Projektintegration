@@ -17,3 +17,9 @@ class ChangeCassetteRequest(BaseModel):
 class GetCassetteRequest(BaseModel):
     device_id: str
     device_hash: str
+
+
+class UpdateCassetteRequest(BaseModel):
+    admin_key: str
+    cassette_id: str
+    cassette: dict
