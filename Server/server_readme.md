@@ -6,7 +6,7 @@
 ``sudo docker-compose up -d``
 
 ## Start API
-``uvicorn main:backend --reload``
+``python3 -m api.api``
 
 # Datenstrukturen
 ## Geräte-Objekt
