@@ -1,5 +1,5 @@
 from database.database_connector import DeviceHandler, CassetteHandler
-from api.data_models import AuthRequest, ChangeCassetteRequest, GetCassetteRequest, UpdateCassetteRequest
+from api.data_models import ChangeCassetteRequest, UpdateCassetteRequest
 from fastapi import HTTPException
 from dotenv import load_dotenv
 import os
@@ -16,9 +16,9 @@ class RouteServices:
         print('You just got pinged!')
         return 'Pong'
 
-    def auth_device(self, auth_request: AuthRequest):
+    def auth_device(self, device_id, device_pwd):
         """Returns Auth-Hash if request is valid"""
-        server_response_status_ok, server_response_content = self.device_db_handler.auth_app(auth_request.device_id, auth_request.device_pwd)
+        server_response_status_ok, server_response_content = self.device_db_handler.auth_app(device_id, device_pwd)
         if not server_response_status_ok:
             raise HTTPException(status_code=404, detail=server_response_content)
         else:
@@ -31,8 +31,8 @@ class RouteServices:
         else:
             raise HTTPException(status_code=404, detail=server_response_content)
 
-    def get_device_cassette(self, request: GetCassetteRequest):
-        server_response_status_ok, server_response_content = self.device_db_handler.get_device_cassette(request.device_id, request.device_hash)
+    def get_device_cassette(self, device_id, device_hash):
+        server_response_status_ok, server_response_content = self.device_db_handler.get_device_cassette(device_id, device_hash)
         if server_response_status_ok:
             return server_response_content
         else:
