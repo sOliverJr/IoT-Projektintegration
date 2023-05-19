@@ -20,8 +20,8 @@ export type RootStackParamList = {
 };
 
 type PersistStore = {
-  deviceId: string;
-  deviceHash: string;
+  deviceId: string | null;
+  deviceHash: string | null;
   setDeviceId: Function;
   setDeviceHash: Function;
 };

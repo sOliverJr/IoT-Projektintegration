@@ -53,9 +53,11 @@ export default function ConsumerScreen() {
         <TouchableOpacity
           style={styles.disconnectButton}
           onPress={() => {
-            // usePersistStore.setState({ deviceHash: "none", deviceId: "none" });
-            // usePersistStore.getState().setDeviceHash("none");
-            navigation.navigate("DeviceLoginScreen");
+            usePersistStore.setState({
+              deviceId: null,
+              deviceHash: null,
+            });
+            navigation.navigate("SelectionScreen");
           }}
         >
           <Text style={{ color: COLORS.brand }}>Gerät trennen</Text>

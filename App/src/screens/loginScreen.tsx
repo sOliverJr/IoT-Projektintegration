@@ -17,18 +17,20 @@ export default function DeviceLoginScreen() {
   const onValueChange = (input: string, state: (value: string) => any) => {
     state(input);
   };
+
   const tryLogin = async () => {
     axios
       .request({
-        method: "POST",
+        method: "GET",
         url: "http://localhost:5000/auth_device",
-        data: { device_id: deviceId, device_pwd: devicePassword },
+        headers: { device_id: deviceId, device_pwd: devicePassword },
       })
       .then((response) => {
         usePersistStore.setState({
           deviceId: deviceId,
           deviceHash: response.data,
         });
+
         navigation.navigate("ConsumerScreen");
       })
       .catch((err) => {
@@ -36,45 +38,38 @@ export default function DeviceLoginScreen() {
       });
   };
 
-  if (usePersistStore.getState().deviceHash !== "none") {
-    console.log(1);
+  if (usePersistStore.getState().deviceHash !== null) {
     navigation.navigate("ConsumerScreen");
     return <View style={styles.view} />;
-  } else console.log(0);
+  }
 
   return (
     <View style={styles.view}>
       <View style={{ flex: 1 }}>
-        {false /* TODO: Check if device is registered */ ? (
-          <View>
-            <ScreenHeader>Aktuelle Einnahme</ScreenHeader>
+        <View style={{ flex: 1 }}>
+          <ScreenHeader>Ein neues Gerät registrieren</ScreenHeader>
+          <View style={styles.inputView}>
+            <InputField
+              defaultText="Gerätenummer"
+              onValueChange={(i) => onValueChange(i, setDeviceId)}
+              value={deviceId ?? ""}
+            />
+            <View style={{ height: 12 }} />
+            <InputField
+              defaultText="Gerätepasswort"
+              onValueChange={(i) => onValueChange(i, setDevicePassword)}
+              value={devicePassword ?? ""}
+            />
+            <Button
+              onPress={() => {
+                tryLogin();
+              }}
+              text="Gerät registrieren"
+              style={{ marginTop: 12 }}
+              disabled={deviceId === "" || devicePassword === ""}
+            />
           </View>
-        ) : (
-          <View style={{ flex: 1 }}>
-            <ScreenHeader>Ein neues Gerät registrieren</ScreenHeader>
-            <View style={styles.inputView}>
-              <InputField
-                defaultText="Gerätenummer"
-                onValueChange={(i) => onValueChange(i, setDeviceId)}
-                value={deviceId ?? ""}
-              />
-              <View style={{ height: 12 }} />
-              <InputField
-                defaultText="Gerätepasswort"
-                onValueChange={(i) => onValueChange(i, setDevicePassword)}
-                value={devicePassword ?? ""}
-              />
-              <Button
-                onPress={() => {
-                  tryLogin();
-                }}
-                text="Gerät registrieren"
-                style={{ marginTop: 12 }}
-                disabled={deviceId === "" || devicePassword === ""}
-              />
-            </View>
-          </View>
-        )}
+        </View>
       </View>
     </View>
   );
