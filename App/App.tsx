@@ -1,12 +1,15 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { StyleSheet } from "react-native";
 import "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import AdminScreen from "./src/screens/adminScreen";
+import CassetteSelectionScreen from "./src/screens/cassetteSelectionScreen";
+import ConsumerScreen from "./src/screens/consumerScreen";
 import DeviceLoginScreen from "./src/screens/loginScreen";
 import SelectionScreen from "./src/screens/selectionScreen";
-import AdminScreen from "./src/screens/adminScreen";
-import ConsumerScreen from "./src/screens/consumerScreen";
-import CassetteSelectionScreen from "./src/screens/cassetteSelectionScreen";
 
 export type RootStackParamList = {
   SelectionScreen: undefined;
@@ -15,6 +18,28 @@ export type RootStackParamList = {
   CassetteSelectionScreen: undefined;
   ConsumerScreen: undefined;
 };
+
+type PersistStore = {
+  deviceId: string;
+  deviceHash: string;
+  setDeviceId: Function;
+  setDeviceHash: Function;
+};
+
+export const usePersistStore = create(
+  persist<PersistStore>(
+    (set, get) => ({
+      deviceId: "",
+      deviceHash: "",
+      setDeviceId: (newId: string) => set({ deviceId: newId }),
+      setDeviceHash: (newHash: string) => set({ deviceHash: newHash }),
+    }),
+    {
+      name: "medikamentenausgabe",
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);
 
 export default function App() {
   const Stack = createStackNavigator();
@@ -49,3 +74,12 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});

@@ -6,7 +6,8 @@ import ScreenHeader from "../shared/screenHeader";
 import InputField from "../shared/textInput";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../App";
+import { RootStackParamList, usePersistStore } from "../../App";
+import axios from "axios";
 
 export default function DeviceLoginScreen() {
   const [deviceId, setDeviceId] = useState<string>("");
@@ -16,6 +17,30 @@ export default function DeviceLoginScreen() {
   const onValueChange = (input: string, state: (value: string) => any) => {
     state(input);
   };
+  const tryLogin = async () => {
+    axios
+      .request({
+        method: "POST",
+        url: "http://localhost:5000/auth_device",
+        data: { device_id: deviceId, device_pwd: devicePassword },
+      })
+      .then((response) => {
+        usePersistStore.setState({
+          deviceId: deviceId,
+          deviceHash: response.data,
+        });
+        navigation.navigate("ConsumerScreen");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
+  if (usePersistStore.getState().deviceHash !== "none") {
+    console.log(1);
+    navigation.navigate("ConsumerScreen");
+    return <View style={styles.view} />;
+  } else console.log(0);
 
   return (
     <View style={styles.view}>
@@ -41,8 +66,7 @@ export default function DeviceLoginScreen() {
               />
               <Button
                 onPress={() => {
-                  // TODO: check device login
-                  navigation.navigate("ConsumerScreen");
+                  tryLogin();
                 }}
                 text="Gerät registrieren"
                 style={{ marginTop: 12 }}

@@ -28,6 +28,9 @@ export default function InputField(props: Props) {
         value={props.value}
         onChangeText={props.onValueChange}
         multiline={props.multiline}
+        autoCorrect={false}
+        autoComplete={"off"}
+        autoCapitalize="none"
       />
     </View>
   );

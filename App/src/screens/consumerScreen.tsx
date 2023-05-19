@@ -3,8 +3,13 @@ import ScreenHeader from "../shared/screenHeader";
 import { COLORS } from "../colors";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Label from "../shared/label";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList, usePersistStore } from "../../App";
 
 export default function ConsumerScreen() {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
   //TODO: request casette info for device
   const times = [1000, 1800];
   const frequency: number = 2;
@@ -37,7 +42,7 @@ export default function ConsumerScreen() {
 
   return (
     <View style={styles.view}>
-      <ScreenHeader>Mein Gerät</ScreenHeader>
+      <ScreenHeader redirectScreen={"SelectionScreen"}>Mein Gerät</ScreenHeader>
       <View style={styles.statusView}>
         <View style={{ flexDirection: "row" }}>
           <Text>Gerätestatus: </Text>
@@ -48,7 +53,9 @@ export default function ConsumerScreen() {
         <TouchableOpacity
           style={styles.disconnectButton}
           onPress={() => {
-            //TODO: disconnect devie --> delete login data
+            // usePersistStore.setState({ deviceHash: "none", deviceId: "none" });
+            // usePersistStore.getState().setDeviceHash("none");
+            navigation.navigate("DeviceLoginScreen");
           }}
         >
           <Text style={{ color: COLORS.brand }}>Gerät trennen</Text>
@@ -71,7 +78,7 @@ export default function ConsumerScreen() {
         <View style={styles.timesView}>
           {times.map((time) => {
             return (
-              <View style={styles.timeItem}>
+              <View style={styles.timeItem} key={time}>
                 <Text
                   style={{ color: COLORS.brand, fontWeight: "bold" }}
                 >{`${formatTime(Math.floor(time / 100))}:${formatTime(
