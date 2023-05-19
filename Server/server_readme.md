@@ -33,7 +33,7 @@ If Server backend is running: ``http://localhost:8000/docs``
 ## App mit Gerät verknüpfen
 ```REST
 GET {URL}/auth_device
-Request body: {"device_id": string, "device_pwd": string}
+Request headers: {"device_id": string, "device_pwd": string}
 Response code: 200
 Response body: {device_hash}
 ```
@@ -49,7 +49,7 @@ Response body: {'Success'}
 ## Aktuell zugewiesene Kassette erhalten
 ```REST
 GET {URL}/cassette
-Request body: {"device_id": string, "device_hash": string}
+Request headers: {"device_id": string, "device_hash": string}
 Response code: 200
 Response body: {"cassette_id": String, "einnahme_frequenz": Integer, "einnahme_uhrzeiten": Integer[]}
 ```
