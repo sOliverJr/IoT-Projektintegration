@@ -10,6 +10,8 @@ import CassetteSelectionScreen from "./src/screens/cassetteSelectionScreen";
 import ConsumerScreen from "./src/screens/consumerScreen";
 import DeviceLoginScreen from "./src/screens/loginScreen";
 import SelectionScreen from "./src/screens/selectionScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import AddCassetteScreen from "./src/screens/addCassetteScreen";
 
 export type RootStackParamList = {
   SelectionScreen: undefined;
@@ -17,11 +19,12 @@ export type RootStackParamList = {
   AdminScreen: undefined;
   CassetteSelectionScreen: undefined;
   ConsumerScreen: undefined;
+  AddCassetteScreen: undefined;
 };
 
 type PersistStore = {
-  deviceId: string | null;
-  deviceHash: string | null;
+  deviceId: string;
+  deviceHash: string;
   setDeviceId: Function;
   setDeviceHash: Function;
 };
@@ -36,7 +39,7 @@ export const usePersistStore = create(
     }),
     {
       name: "medikamentenausgabe",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => AsyncStorage),
     }
   )
 );
@@ -51,7 +54,7 @@ export default function App() {
           <Stack.Navigator
             screenOptions={{
               headerShadowVisible: false,
-              animationEnabled: true,
+              animationEnabled: false,
               headerShown: false,
               gestureEnabled: false,
             }}
@@ -67,6 +70,10 @@ export default function App() {
             <Stack.Screen
               name="CassetteSelectionScreen"
               component={CassetteSelectionScreen}
+            />
+            <Stack.Screen
+              name="AddCassetteScreen"
+              component={AddCassetteScreen}
             />
           </Stack.Navigator>
         </NavigationContainer>

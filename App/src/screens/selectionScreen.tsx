@@ -5,7 +5,7 @@ import { COLORS } from "../colors";
 import Button from "../shared/button";
 import Label from "../shared/label";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../App";
+import { RootStackParamList, usePersistStore } from "../../App";
 import ScreenHeader from "../shared/screenHeader";
 
 export default function SelectionScreen() {
@@ -18,7 +18,9 @@ export default function SelectionScreen() {
         <Button
           text="Patient"
           onPress={() => {
-            navigation.navigate("DeviceLoginScreen");
+            if (usePersistStore.getState().deviceHash !== "") {
+              navigation.navigate("ConsumerScreen");
+            } else navigation.navigate("DeviceLoginScreen");
           }}
           stretch
           style={{ marginBottom: 12, marginTop: 24 }}

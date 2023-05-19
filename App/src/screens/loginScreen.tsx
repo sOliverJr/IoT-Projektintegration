@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import {
+  Keyboard,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { COLORS } from "../colors";
 import Button from "../shared/button";
 import ScreenHeader from "../shared/screenHeader";
@@ -12,13 +18,18 @@ import axios from "axios";
 export default function DeviceLoginScreen() {
   const [deviceId, setDeviceId] = useState<string>("");
   const [devicePassword, setDevicePassword] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [wrongPassword, setWrongPassword] = useState<boolean>(false);
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const onValueChange = (input: string, state: (value: string) => any) => {
+    setWrongPassword(false);
     state(input);
   };
 
   const tryLogin = async () => {
+    setIsLoading(true);
+
     axios
       .request({
         method: "GET",
@@ -34,20 +45,23 @@ export default function DeviceLoginScreen() {
         navigation.navigate("ConsumerScreen");
       })
       .catch((err) => {
-        console.error(err);
+        setWrongPassword(true);
       });
+
+    setIsLoading(false);
   };
 
-  if (usePersistStore.getState().deviceHash !== null) {
-    navigation.navigate("ConsumerScreen");
-    return <View style={styles.view} />;
-  }
-
   return (
-    <View style={styles.view}>
+    <TouchableOpacity
+      style={styles.view}
+      onPress={() => Keyboard.dismiss()}
+      activeOpacity={1}
+    >
       <View style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
-          <ScreenHeader>Ein neues Gerät registrieren</ScreenHeader>
+          <ScreenHeader redirectScreen="SelectionScreen">
+            Ein neues Gerät registrieren
+          </ScreenHeader>
           <View style={styles.inputView}>
             <InputField
               defaultText="Gerätenummer"
@@ -60,18 +74,23 @@ export default function DeviceLoginScreen() {
               onValueChange={(i) => onValueChange(i, setDevicePassword)}
               value={devicePassword ?? ""}
             />
+            <Text style={styles.errorText}>
+              {wrongPassword
+                ? "Falsche Gerätenummer und -passwortkombination"
+                : ""}
+            </Text>
             <Button
               onPress={() => {
                 tryLogin();
               }}
               text="Gerät registrieren"
               style={{ marginTop: 12 }}
-              disabled={deviceId === "" || devicePassword === ""}
+              disabled={deviceId === "" || devicePassword === "" || isLoading}
             />
           </View>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -85,5 +104,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  errorText: {
+    padding: 12,
+    textAlignVertical: "center",
+    color: COLORS.brand,
+    height: 50,
   },
 });
