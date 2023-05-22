@@ -32,32 +32,41 @@ kassette: {
 If Server backend is running: ``http://localhost:8000/docs``
 ## App mit Gerät verknüpfen
 ```REST
-GET {URL}/auth_device
-Request headers: {"device_id": string, "device_pwd": string}
+GET {URL}/auth_device/{device_id}
+Request header: {"device_pwd": string}
 Response code: 200
 Response body: {device_hash}
 ```
 
-## Kassette wechseln
+## Abfrage ob Kassette existiert
 ```REST
-PUT {URL}/cassette
-Request body: {"device_id": string, "device_hash": string, "cassette_id": string}
+GET {URL}/cassette_exists/{cassette_id}
+Request header: {"adminKey": string}
 Response code: 200
-Response body: {'Success'}
+Response body: {"Cassette with that ID exists"}
 ```
 
 ## Aktuell zugewiesene Kassette erhalten
 ```REST
-GET {URL}/cassette
-Request headers: {"device_id": string, "device_hash": string}
+GET {URL}/cassette/{device_id}
+Request header: {"device_hash": string}
 Response code: 200
 Response body: {"cassette_id": String, "einnahme_frequenz": Integer, "einnahme_uhrzeiten": Integer[]}
 ```
 
+## Kassette wechseln
+```REST
+PUT {URL}/cassette/{device_id}
+Request headers: {"device_hash": string, "cassette_id": string}
+Response code: 200
+Response body: {'Success'}
+```
+
 ## Kassetten-Informationen updaten
 ```REST
-PATCH {URL}/cassette
-Request body: {"admin_key": string, "cassette_id": string, "cassette": dict}
+PATCH {URL}/cassette/{cassette_id}
+Request header: {"admin_key": string}
+Request body: {"cassette": dict}
 Response code: 200
 Response body: {cassette: dict}
 ```

@@ -1,5 +1,4 @@
 from database.database_connector import DeviceHandler, CassetteHandler
-from api.data_models import ChangeCassetteRequest, UpdateCassetteRequest
 from fastapi import HTTPException
 from dotenv import load_dotenv
 import os
@@ -24,8 +23,10 @@ class RouteServices:
         else:
             return server_response_content
 
-    def change_cassette(self, request: ChangeCassetteRequest):
-        server_response_status_ok, server_response_content = self.device_db_handler.change_device_cassette(request.cassette_id, request.device_id, request.device_hash)
+    def cassette_exists(self, cassette_id, admin_key):
+        if admin_key != os.getenv('ADMIN_KEY'):
+            raise HTTPException(status_code=404, detail='Invalid admin key')
+        server_response_status_ok, server_response_content = self.cassette_db_handler.get_cassette(cassette_id)
         if server_response_status_ok:
             return server_response_content
         else:
@@ -38,10 +39,17 @@ class RouteServices:
         else:
             raise HTTPException(status_code=404, detail=server_response_content)
 
-    def update_cassette(self, request: UpdateCassetteRequest):
-        if request.admin_key != os.getenv('ADMIN_KEY'):
+    def change_cassette(self, device_id, device_hash, cassette_id):
+        server_response_status_ok, server_response_content = self.device_db_handler.change_device_cassette(cassette_id, device_id, device_hash)
+        if server_response_status_ok:
+            return server_response_content
+        else:
+            raise HTTPException(status_code=404, detail=server_response_content)
+
+    def update_cassette(self, cassette_id, admin_key, new_cassette):
+        if admin_key != os.getenv('ADMIN_KEY'):
             raise HTTPException(status_code=404, detail='Invalid admin key')
-        server_response_status_ok, server_response_content = self.cassette_db_handler.update_cassette(request.cassette_id, request.cassette)
+        server_response_status_ok, server_response_content = self.cassette_db_handler.update_cassette(cassette_id, new_cassette)
         if server_response_status_ok:
             return server_response_content
         else:

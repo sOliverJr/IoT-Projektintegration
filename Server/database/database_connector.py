@@ -107,3 +107,11 @@ class CassetteHandler:
             updated_cassette = {"$set": new_cassette}
             self.cassette_collection.update_one(query, updated_cassette)
             return True, new_cassette
+
+    def get_cassette(self, cassette_id):
+        query = {'cassette_id': cassette_id}
+        cassette = self.cassette_collection.find_one(query, {'_id': 0})
+        if cassette is None:
+            return False, 'No cassette with that ID'
+        else:
+            return True, 'Cassette with that ID exists'

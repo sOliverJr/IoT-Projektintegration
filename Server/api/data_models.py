@@ -20,6 +20,6 @@ class GetCassetteRequest(BaseModel):
 
 
 class UpdateCassetteRequest(BaseModel):
-    admin_key: str
-    cassette_id: str
+    # admin_key: str
+    # cassette_id: str
     cassette: dict
