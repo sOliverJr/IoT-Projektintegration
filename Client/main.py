@@ -25,6 +25,7 @@ device_hash = os.getenv('DEVICE_HASH')
 cassette_fields = int(os.getenv('CASSETTE_FIELDS'))
 # TODO cassette_fields should probably be gotten by database
 
+
 def _reset_day():
     global intake_times
     global todays_intakes

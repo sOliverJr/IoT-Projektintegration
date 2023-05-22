@@ -24,7 +24,6 @@ async def auth_device(device_id, request: Request):
 @backend.get('/cassette_exists/{cassette_id}')
 async def cassette_exists(cassette_id, request: Request):
     """Get cassette of device"""
-    print(cassette_id)
     return route_service.cassette_exists(cassette_id, request.headers.get('adminKey'))
 
 
