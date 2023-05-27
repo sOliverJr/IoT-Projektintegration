@@ -33,16 +33,18 @@ export default function DeviceLoginScreen() {
     axios
       .request({
         method: "GET",
-        url: "http://localhost:5000/auth_device",
-        headers: { device_id: deviceId, device_pwd: devicePassword },
+        url: `http://localhost:5000/auth_device/${deviceId}`,
+        headers: { device_pwd: devicePassword },
       })
       .then((response) => {
-        usePersistStore.setState({
-          deviceId: deviceId,
-          deviceHash: response.data,
-        });
+        if (response.status === 200) {
+          usePersistStore.setState({
+            deviceId: deviceId,
+            deviceHash: response.data,
+          });
 
-        navigation.navigate("ConsumerScreen");
+          navigation.navigate("ConsumerScreen");
+        } else setWrongPassword(true);
       })
       .catch((err) => {
         setWrongPassword(true);
@@ -59,9 +61,7 @@ export default function DeviceLoginScreen() {
     >
       <View style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
-          <ScreenHeader redirectScreen="SelectionScreen">
-            Ein neues Gerät registrieren
-          </ScreenHeader>
+          <ScreenHeader>Ein neues Gerät registrieren</ScreenHeader>
           <View style={styles.inputView}>
             <InputField
               defaultText="Gerätenummer"

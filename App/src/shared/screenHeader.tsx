@@ -8,11 +8,7 @@ import { RootStackParamList } from "../../App";
 type Props = {
   children: string;
   disableBackButton?: boolean;
-  redirectScreen?:
-    | "SelectionScreen"
-    | "ConsumerScreen"
-    | "AdminScreen"
-    | "CassetteSelectionScreen";
+  onNavigateBack?: () => void;
 };
 
 export default function ScreenHeader(props: Props) {
@@ -31,12 +27,10 @@ export default function ScreenHeader(props: Props) {
         <View />
       ) : (
         <TouchableOpacity
-          onPress={
-            props.redirectScreen !== undefined
-              ? () =>
-                  navigation.navigate(props.redirectScreen ?? "SelectionScreen")
-              : () => navigation.goBack()
-          }
+          onPress={() => {
+            if (props.onNavigateBack) props.onNavigateBack();
+            else navigation.goBack();
+          }}
           style={{ marginRight: 12 }}
         >
           <ArrowIcon color={"black"} size={22} orientation="left" />

@@ -1,21 +1,35 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import ScreenHeader from "../shared/screenHeader";
 import { COLORS } from "../colors";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Label from "../shared/label";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList, usePersistStore } from "../../App";
 import axios from "axios";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Cassette } from "../shared/types";
 import Button from "../shared/button";
 
 export default function ConsumerScreen() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
   const [data, setData] = useState<Cassette>();
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingError, setLoadingError] = useState<boolean>(false);
+  const [deviceId, setDeviceId] = useState<string>(
+    usePersistStore((state) => state.deviceId) ?? ""
+  );
+  const [deviceHash, setDeviceHash] = useState<string>(
+    usePersistStore((satte) => satte.deviceHash) ?? ""
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      setDeviceHash(usePersistStore.getState().deviceHash ?? "");
+      setDeviceId(usePersistStore.getState().deviceId ?? "");
+    }, [])
+  );
 
   if (!data && !loading) {
     setLoadingError(false);
@@ -24,10 +38,9 @@ export default function ConsumerScreen() {
     axios
       .request({
         method: "GET",
-        url: "http://localhost:5000/cassette",
+        url: `http://localhost:5000/cassette/${deviceId}`,
         headers: {
-          device_id: usePersistStore.getState().deviceId,
-          device_hash: usePersistStore.getState().deviceHash,
+          device_hash: deviceHash,
         },
       })
       .then((response) => {
@@ -67,7 +80,13 @@ export default function ConsumerScreen() {
 
   return (
     <View style={styles.view}>
-      <ScreenHeader redirectScreen={"SelectionScreen"}>Mein Gerät</ScreenHeader>
+      <ScreenHeader
+        onNavigateBack={() => {
+          navigation.navigate("SelectionScreen");
+        }}
+      >
+        Mein Gerät
+      </ScreenHeader>
 
       <View style={styles.deviceInfo}>
         <Text>Gerätenummer: </Text>
@@ -84,11 +103,22 @@ export default function ConsumerScreen() {
         <TouchableOpacity
           style={styles.disconnectButton}
           onPress={() => {
-            usePersistStore.setState({
-              deviceId: "",
-              deviceHash: "",
-            });
-            navigation.navigate("SelectionScreen");
+            Alert.alert(
+              "Gerät trennen?",
+              "Bei erneutem Zugriff ist eine neue Anmeldung notwendig",
+              [
+                { text: "Abbrechen", style: "cancel" },
+                {
+                  text: "Trennen",
+                  onPress: () => {
+                    usePersistStore.getState().setDeviceHash("");
+                    usePersistStore.getState().setDeviceId("");
+
+                    navigation.navigate("SelectionScreen");
+                  },
+                },
+              ]
+            );
           }}
         >
           <Text style={{ color: COLORS.brand }}>Gerät trennen</Text>

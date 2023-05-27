@@ -13,9 +13,16 @@ import ArrowIcon from "../icons/arrowIcon";
 import axios from "axios";
 
 export default function AddCassetteScreen() {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+  const [deviceId, setDeviceId] = useState<string>(
+    usePersistStore((state) => state.deviceId) ?? ""
+  );
+  const [deviceHash, setDeviceHash] = useState<string>(
+    usePersistStore((satte) => satte.deviceHash) ?? ""
+  );
   const [cassetteId, setCassetteId] = useState<string>("");
   const [loadingError, setLoadingError] = useState<boolean>(false);
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const addCassette = () => {
     setLoadingError(false);
@@ -23,12 +30,8 @@ export default function AddCassetteScreen() {
     axios
       .request({
         method: "PUT",
-        url: "http://localhost:5000/cassette",
-        data: {
-          device_id: usePersistStore.getState().deviceId,
-          device_hash: usePersistStore.getState().deviceHash,
-          cassette_id: cassetteId,
-        },
+        url: `http://localhost:5000/cassette/${deviceId}`,
+        headers: { device_hash: deviceHash, cassette_id: cassetteId },
       })
       .then(() => {
         navigation.navigate("ConsumerScreen");
@@ -40,9 +43,7 @@ export default function AddCassetteScreen() {
 
   return (
     <View style={styles.view}>
-      <ScreenHeader redirectScreen="ConsumerScreen">
-        Kassette koppeln
-      </ScreenHeader>
+      <ScreenHeader>Kassette koppeln</ScreenHeader>
       <View style={{ flex: 1, justifyContent: "center" }}>
         <View
           style={{

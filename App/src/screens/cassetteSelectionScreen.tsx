@@ -10,10 +10,37 @@ import InputField from "../shared/textInput";
 import { useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import ArrowIcon from "../icons/arrowIcon";
+import axios from "axios";
 
 export default function CassetteSelectionScreen() {
-  const [cassetteId, setCassetteId] = useState<string>("");
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+  const [cassetteId, setCassetteId] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loadingError, setLoadingError] = useState<boolean>(false);
+
+  const checkCassette = () => {
+    setIsLoading(true);
+
+    axios
+      .request({
+        method: "GET",
+        url: `http://localhost:5000/cassette_exists/${cassetteId}`,
+        headers: {
+          adminKey: "admin",
+        },
+      })
+      .then((response) => {
+        setIsLoading(false);
+
+        if (response.status === 200)
+          navigation.navigate("AdminScreen", { cassetteId: cassetteId });
+      })
+      .catch(() => {
+        setIsLoading(false);
+        setLoadingError(true);
+      });
+  };
 
   return (
     <View style={styles.view}>
@@ -31,7 +58,10 @@ export default function CassetteSelectionScreen() {
           >
             <InputField
               defaultText="Kassettennummer"
-              onValueChange={(i) => setCassetteId(i)}
+              onValueChange={(i) => {
+                setLoadingError(false);
+                setCassetteId(i);
+              }}
               value={cassetteId}
             />
           </View>
@@ -42,20 +72,33 @@ export default function CassetteSelectionScreen() {
               alignItems: "center",
             }}
             onPress={() => {
-              navigation.navigate("AdminScreen");
+              checkCassette();
             }}
-            disabled={cassetteId === ""}
+            disabled={cassetteId === "" || isLoading}
           >
             <ArrowIcon
               orientation="right"
               size={30}
-              color={cassetteId === "" ? COLORS.disabled : COLORS.brand}
+              color={
+                cassetteId === "" || isLoading ? COLORS.disabled : COLORS.brand
+              }
             />
           </TouchableOpacity>
         </View>
         <Label
+          style={{
+            color: COLORS.brand,
+            marginVertical: 12,
+            textAlign: "center",
+          }}
+        >
+          {loadingError
+            ? "Es konnte keine Kassette mit der angegebenen Nummer gefunden werden"
+            : "\n"}
+        </Label>
+        <Label
           align="center"
-          style={{ color: COLORS.disabled, marginBottom: 12, marginTop: 42 }}
+          style={{ color: COLORS.disabled, marginBottom: 12, marginTop: 12 }}
         >
           ODER
         </Label>

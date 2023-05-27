@@ -16,7 +16,7 @@ import AddCassetteScreen from "./src/screens/addCassetteScreen";
 export type RootStackParamList = {
   SelectionScreen: undefined;
   DeviceLoginScreen: undefined;
-  AdminScreen: undefined;
+  AdminScreen: {cassetteId: string};
   CassetteSelectionScreen: undefined;
   ConsumerScreen: undefined;
   AddCassetteScreen: undefined;
@@ -25,8 +25,8 @@ export type RootStackParamList = {
 type PersistStore = {
   deviceId: string;
   deviceHash: string;
-  setDeviceId: Function;
-  setDeviceHash: Function;
+  setDeviceId: (deviceId: string) => void;
+  setDeviceHash: (deviceHash: string) => void;
 };
 
 export const usePersistStore = create(
@@ -34,8 +34,12 @@ export const usePersistStore = create(
     (set, get) => ({
       deviceId: "",
       deviceHash: "",
-      setDeviceId: (newId: string) => set({ deviceId: newId }),
-      setDeviceHash: (newHash: string) => set({ deviceHash: newHash }),
+      setDeviceId: (newId: string) => {
+        set((state) => ({ deviceId: newId }));
+      },
+      setDeviceHash: (newHash: string) => {
+        set((state) => ({ deviceHash: newHash }));
+      },
     }),
     {
       name: "medikamentenausgabe",
