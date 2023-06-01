@@ -1,15 +1,24 @@
-import { useNavigation } from "@react-navigation/core";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { RootStackParamList, usePersistStore } from "../../App";
 import { COLORS } from "../colors";
 import Button from "../shared/button";
-import Label from "../shared/label";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../App";
 import ScreenHeader from "../shared/screenHeader";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 export default function SelectionScreen() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+  const [deviceHash, setDeviceHash] = useState<string>(
+    usePersistStore((state) => state.deviceHash)
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      setDeviceHash(usePersistStore.getState().deviceHash ?? "");
+    }, [])
+  );
 
   return (
     <View style={styles.view}>
@@ -18,7 +27,9 @@ export default function SelectionScreen() {
         <Button
           text="Patient"
           onPress={() => {
-            navigation.navigate("DeviceLoginScreen");
+            if (deviceHash !== "") {
+              navigation.navigate("ConsumerScreen");
+            } else navigation.navigate("DeviceLoginScreen");
           }}
           stretch
           style={{ marginBottom: 12, marginTop: 24 }}

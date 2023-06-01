@@ -1,5 +1,8 @@
+import { type NativeStackScreenProps } from "@react-navigation/native-stack";
+import axios from "axios";
 import { useState } from "react";
 import {
+  Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -7,21 +10,29 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { RootStackParamList } from "../../App";
 import { COLORS } from "../colors";
+import ArrowIcon from "../icons/arrowIcon";
+import CrossIcon from "../icons/crossIcon";
 import Button from "../shared/button";
 import ScreenHeader from "../shared/screenHeader";
 import InputField from "../shared/textInput";
-import ArrowIcon from "../icons/arrowIcon";
-import DropDownPicker from "react-native-dropdown-picker";
-import CrossIcon from "../icons/crossIcon";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 
-export default function AdminScreen() {
+type Props = NativeStackScreenProps<RootStackParamList, "AdminScreen">;
+
+export default function AdminScreen({ route }: Props) {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
   const [title, setTitle] = useState<string>("");
   const [comment, setComment] = useState<string>("");
   const [frequency, setFrequency] = useState<number>(1);
-  const [times, setTimes] = useState<number[]>([1015, 2030]);
+  const [times, setTimes] = useState<number[]>([]);
   const [selectedHour, setSelectedHour] = useState<number>(12);
   const [selectedMinute, setSelectedMinute] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const MAX_TIMES = 4;
 
   const frequencyAsText = (): string => {
@@ -45,10 +56,6 @@ export default function AdminScreen() {
     }
   };
 
-  const onValueChange = (input: string, state: (value: string) => any) => {
-    state(input);
-  };
-
   const removeTime = (time: number) => {
     const timesArray = times.slice();
     const index = times.indexOf(time);
@@ -70,21 +77,79 @@ export default function AdminScreen() {
     return time >= 10 ? time.toString() : `0${time}`;
   };
 
+  const updateCassette = () => {
+    setIsLoading(true);
+
+    axios
+      .request({
+        method: "PATCH",
+        url: `http://localhost:5000/cassette/${route.params.cassetteId}`,
+        headers: {
+          adminKey: "admin",
+        },
+        data: {
+          cassette: {
+            einnahme_frequenz: frequency,
+            einnahme_uhrzeiten: times,
+            comment: comment,
+            title: title,
+          },
+        },
+      })
+      .then((response) => {
+        setIsLoading(false);
+
+        Alert.alert(
+          "Einnahme gespeichert",
+          "Die Einstellungen wurden erfolgreich der Kassette zugeschrieben",
+          [
+            {
+              text: "Weiter",
+              onPress: () => {
+                navigation.navigate("CassetteSelectionScreen");
+              },
+            },
+          ]
+        );
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={styles.view}>
         <View style={{ flex: 1, padding: 12 }}>
-          <ScreenHeader>Kasette verwalten</ScreenHeader>
+          <ScreenHeader
+            onNavigateBack={() => {
+              Alert.alert(
+                "Bearbeitung abbrechen?",
+                "Vorgenommene Änderungen werden verworfen",
+                [
+                  { text: "Weiter bearbeiten", style: "cancel" },
+                  {
+                    text: "Abbrechen",
+                    onPress: () => {
+                      navigation.navigate("CassetteSelectionScreen");
+                    },
+                  },
+                ]
+              );
+            }}
+          >
+            Kasette verwalten
+          </ScreenHeader>
           <Text style={styles.label}>Titel</Text>
           <InputField
             defaultText="Titel"
-            onValueChange={(i) => onValueChange(i, setTitle)}
+            onValueChange={(i) => setTitle(i)}
             value={title}
           />
           <Text style={styles.label}>Kommentar</Text>
           <InputField
             defaultText="Kommentar (optional)"
-            onValueChange={(i) => onValueChange(i, setComment)}
+            onValueChange={(i) => setComment(i)}
             value={comment}
             multiline={true}
           />
@@ -197,7 +262,7 @@ export default function AdminScreen() {
           <View style={styles.divider} />
           <Button
             onPress={() => {
-              // TODO: send request to api
+              updateCassette();
             }}
             text="Konfiguration abschließen"
             stretch={false}

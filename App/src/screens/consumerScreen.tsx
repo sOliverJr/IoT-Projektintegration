@@ -1,14 +1,57 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import ScreenHeader from "../shared/screenHeader";
 import { COLORS } from "../colors";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Label from "../shared/label";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList, usePersistStore } from "../../App";
+import axios from "axios";
+import { useCallback, useState } from "react";
+import { Cassette } from "../shared/types";
+import Button from "../shared/button";
 
 export default function ConsumerScreen() {
-  //TODO: request casette info for device
-  const times = [1000, 1800];
-  const frequency: number = 2;
-  const comment = "Immer mit einem Glas Wasser einnehmen";
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+  const [data, setData] = useState<Cassette>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingError, setLoadingError] = useState<boolean>(false);
+  const [deviceId, setDeviceId] = useState<string>(
+    usePersistStore((state) => state.deviceId) ?? ""
+  );
+  const [deviceHash, setDeviceHash] = useState<string>(
+    usePersistStore((satte) => satte.deviceHash) ?? ""
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      setDeviceHash(usePersistStore.getState().deviceHash ?? "");
+      setDeviceId(usePersistStore.getState().deviceId ?? "");
+    }, [])
+  );
+
+  if (!data && !loading) {
+    setLoadingError(false);
+    setLoading(true);
+
+    axios
+      .request({
+        method: "GET",
+        url: `http://localhost:5000/cassette/${deviceId}`,
+        headers: {
+          device_hash: deviceHash,
+        },
+      })
+      .then((response) => {
+        setLoading(false);
+        setData(response.data);
+      })
+      .catch(() => {
+        setLoading(false);
+        setLoadingError(true);
+      });
+  }
 
   const formatTime = (time: number): string => {
     return time >= 10 ? time.toString() : `0${time}`;
@@ -37,7 +80,19 @@ export default function ConsumerScreen() {
 
   return (
     <View style={styles.view}>
-      <ScreenHeader>Mein Gerät</ScreenHeader>
+      <ScreenHeader
+        onNavigateBack={() => {
+          navigation.navigate("SelectionScreen");
+        }}
+      >
+        Mein Gerät
+      </ScreenHeader>
+
+      <View style={styles.deviceInfo}>
+        <Text>Gerätenummer: </Text>
+        <Text>{usePersistStore.getState().deviceId}</Text>
+      </View>
+
       <View style={styles.statusView}>
         <View style={{ flexDirection: "row" }}>
           <Text>Gerätestatus: </Text>
@@ -48,44 +103,80 @@ export default function ConsumerScreen() {
         <TouchableOpacity
           style={styles.disconnectButton}
           onPress={() => {
-            //TODO: disconnect devie --> delete login data
+            Alert.alert(
+              "Gerät trennen?",
+              "Bei erneutem Zugriff ist eine neue Anmeldung notwendig",
+              [
+                { text: "Abbrechen", style: "cancel" },
+                {
+                  text: "Trennen",
+                  onPress: () => {
+                    usePersistStore.getState().setDeviceHash("");
+                    usePersistStore.getState().setDeviceId("");
+
+                    navigation.navigate("SelectionScreen");
+                  },
+                },
+              ]
+            );
           }}
         >
           <Text style={{ color: COLORS.brand }}>Gerät trennen</Text>
         </TouchableOpacity>
       </View>
       <Label size="title">Aktuelle Einnahme</Label>
-      <View style={styles.consumptionView}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Label
-            size="default"
-            style={{ color: COLORS.white, marginBottom: 12 }}
+      {data && !loadingError ? (
+        <View style={styles.consumptionView}>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            Titel der Einnahme
+            <Label
+              size="default"
+              style={{ color: COLORS.white, marginBottom: 12 }}
+            >
+              {data.title ?? "Einnahme"}
+            </Label>
+            <Text style={{ color: COLORS.white }}>
+              Kassette: {data.cassette_id}
+            </Text>
+          </View>
+          <Label size="title" style={{ color: COLORS.white }}>
+            {`${frequencyAsText(data.einnahme_frequenz)}, um`}
           </Label>
-          <Text style={{ color: COLORS.white }}>Kassette: 12345</Text>
+          <View style={styles.timesView}>
+            {data.einnahme_uhrzeiten.map((time) => {
+              return (
+                <View style={styles.timeItem} key={time}>
+                  <Text
+                    style={{ color: COLORS.brand, fontWeight: "bold" }}
+                  >{`${formatTime(Math.floor(time / 100))}:${formatTime(
+                    time % 100
+                  )}`}</Text>
+                </View>
+              );
+            })}
+          </View>
+          <Label size="default" style={{ color: COLORS.white, marginTop: 12 }}>
+            Kommentar:
+          </Label>
+          <Text style={{ color: COLORS.white }}>
+            {data.comment ?? "kein Kommentar"}
+          </Text>
         </View>
-        <Label size="title" style={{ color: COLORS.white }}>
-          {`${frequencyAsText(frequency)}, um`}
-        </Label>
-        <View style={styles.timesView}>
-          {times.map((time) => {
-            return (
-              <View style={styles.timeItem}>
-                <Text
-                  style={{ color: COLORS.brand, fontWeight: "bold" }}
-                >{`${formatTime(Math.floor(time / 100))}:${formatTime(
-                  time % 100
-                )}`}</Text>
-              </View>
-            );
-          })}
+      ) : (
+        <View>
+          <Text style={styles.errorText}>
+            Zum aktuellen Zeitpunkt ist keine Kassette mit deinem Gerät
+            verbunden...
+          </Text>
+          <Button
+            text="Jetzt koppeln"
+            onPress={() => {
+              navigation.navigate("AddCassetteScreen");
+            }}
+          />
         </View>
-        <Label size="default" style={{ color: COLORS.white, marginTop: 12 }}>
-          Kommentar:
-        </Label>
-        <Text style={{ color: COLORS.white }}>{comment}</Text>
-      </View>
+      )}
     </View>
   );
 }
@@ -96,8 +187,13 @@ const styles = StyleSheet.create({
     padding: 12,
     backgroundColor: COLORS.white,
   },
+  deviceInfo: {
+    marginTop: 18,
+    flexDirection: "row",
+  },
   statusView: {
-    marginVertical: 12,
+    marginTop: 6,
+    marginBottom: 24,
     flexDirection: "row",
     justifyContent: "space-between",
   },
@@ -125,5 +221,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     borderRadius: 20,
     padding: 6,
+  },
+  errorText: {
+    marginVertical: 24,
   },
 });

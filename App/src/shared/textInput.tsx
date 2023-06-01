@@ -9,10 +9,6 @@ type Props = {
 };
 
 export default function InputField(props: Props) {
-  const onValueChange = (input: any) => {
-    props.onValueChange(input);
-  };
-
   return (
     <View
       style={{
@@ -28,6 +24,9 @@ export default function InputField(props: Props) {
         value={props.value}
         onChangeText={props.onValueChange}
         multiline={props.multiline}
+        autoCorrect={false}
+        autoComplete={"off"}
+        autoCapitalize="none"
       />
     </View>
   );

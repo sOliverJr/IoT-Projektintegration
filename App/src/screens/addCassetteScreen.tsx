@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import ScreenHeader from "../shared/screenHeader";
 import Button from "../shared/button";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../App";
+import { RootStackParamList, usePersistStore } from "../../App";
 import { COLORS } from "../colors";
 import Label from "../shared/label";
 import InputField from "../shared/textInput";
@@ -12,39 +12,38 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import ArrowIcon from "../icons/arrowIcon";
 import axios from "axios";
 
-export default function CassetteSelectionScreen() {
+export default function AddCassetteScreen() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
+  const [deviceId, setDeviceId] = useState<string>(
+    usePersistStore((state) => state.deviceId) ?? ""
+  );
+  const [deviceHash, setDeviceHash] = useState<string>(
+    usePersistStore((satte) => satte.deviceHash) ?? ""
+  );
   const [cassetteId, setCassetteId] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loadingError, setLoadingError] = useState<boolean>(false);
 
-  const checkCassette = () => {
-    setIsLoading(true);
+  const addCassette = () => {
+    setLoadingError(false);
 
     axios
       .request({
-        method: "GET",
-        url: `http://localhost:5000/cassette_exists/${cassetteId}`,
-        headers: {
-          adminKey: "admin",
-        },
+        method: "PUT",
+        url: `http://localhost:5000/cassette/${deviceId}`,
+        headers: { device_hash: deviceHash, cassette_id: cassetteId },
       })
-      .then((response) => {
-        setIsLoading(false);
-
-        if (response.status === 200)
-          navigation.navigate("AdminScreen", { cassetteId: cassetteId });
+      .then(() => {
+        navigation.navigate("ConsumerScreen");
       })
       .catch(() => {
-        setIsLoading(false);
         setLoadingError(true);
       });
   };
 
   return (
     <View style={styles.view}>
-      <ScreenHeader>Kassette verwalten</ScreenHeader>
+      <ScreenHeader>Kassette koppeln</ScreenHeader>
       <View style={{ flex: 1, justifyContent: "center" }}>
         <View
           style={{
@@ -59,7 +58,7 @@ export default function CassetteSelectionScreen() {
             <InputField
               defaultText="Kassettennummer"
               onValueChange={(i) => {
-                setLoadingError(false);
+                if (loadingError) setLoadingError(false);
                 setCassetteId(i);
               }}
               value={cassetteId}
@@ -72,16 +71,14 @@ export default function CassetteSelectionScreen() {
               alignItems: "center",
             }}
             onPress={() => {
-              checkCassette();
+              addCassette();
             }}
-            disabled={cassetteId === "" || isLoading}
+            disabled={cassetteId === ""}
           >
             <ArrowIcon
               orientation="right"
               size={30}
-              color={
-                cassetteId === "" || isLoading ? COLORS.disabled : COLORS.brand
-              }
+              color={cassetteId === "" ? COLORS.disabled : COLORS.brand}
             />
           </TouchableOpacity>
         </View>
@@ -93,7 +90,7 @@ export default function CassetteSelectionScreen() {
           }}
         >
           {loadingError
-            ? "Es konnte keine Kassette mit der angegebenen Nummer gefunden werden"
+            ? "Die angegebene Kassette existiert nicht oder ist bereits mit einem anderen Gerät gekoppelt"
             : "\n"}
         </Label>
         <Label
@@ -105,7 +102,7 @@ export default function CassetteSelectionScreen() {
         <Button
           text="QR-Code scannen"
           onPress={() => {
-            navigation.navigate("CassetteSelectionScreen");
+            navigation.navigate("ConsumerScreen");
           }}
           stretch
           disabled
