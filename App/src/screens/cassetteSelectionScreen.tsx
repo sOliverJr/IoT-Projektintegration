@@ -1,27 +1,27 @@
 import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import axios from "axios";
+import { useState } from "react";
 import {
   Dimensions,
   Modal,
   SafeAreaView,
+  StatusBar,
   StyleSheet,
-  Text,
-  Touchable,
   View,
 } from "react-native";
-import ScreenHeader from "../shared/screenHeader";
-import Button from "../shared/button";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../App";
-import { COLORS } from "../colors";
-import Label from "../shared/label";
-import InputField from "../shared/textInput";
-import { useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import ArrowIcon from "../icons/arrowIcon";
-import axios from "axios";
-import CrossIcon from "../icons/crossIcon";
 import QRCodeScanner from "react-native-qrcode-scanner";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { RootStackParamList } from "../../App";
+import { COLORS } from "../colors";
+import { CONFIG } from "../config";
+import ArrowIcon from "../icons/arrowIcon";
+import CrossIcon from "../icons/crossIcon";
+import Button from "../shared/button";
+import Label from "../shared/label";
+import ScreenHeader from "../shared/screenHeader";
+import InputField from "../shared/textInput";
 
 export default function CassetteSelectionScreen() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -34,14 +34,13 @@ export default function CassetteSelectionScreen() {
   const { width, height } = Dimensions.get("screen");
   const insets = useSafeAreaInsets();
 
-  const checkCassette = () => {
+  const checkCassette = (data: string) => {
     setIsLoading(true);
 
     axios
       .request({
         method: "GET",
-        // rl: `http://169.254.121.31:5000/cassette_exists/${cassetteId}`,
-        url: `http://169.254.121.31:5000/cassette_exists/${cassetteId}`,
+        url: `http://${CONFIG.api_ip}:5000/cassette_exists/${data}`,
         headers: {
           adminKey: "admin",
         },
@@ -50,7 +49,7 @@ export default function CassetteSelectionScreen() {
         setIsLoading(false);
 
         if (response.status === 200)
-          navigation.navigate("AdminScreen", { cassetteId: cassetteId });
+          navigation.navigate("AdminScreen", { cassetteId: data });
       })
       .catch(() => {
         setIsLoading(false);
@@ -69,25 +68,35 @@ export default function CassetteSelectionScreen() {
             setShowScannerModal(false);
           }}
         >
+          <StatusBar backgroundColor={COLORS.white} barStyle="light-content" />
           <View style={styles.scannerModal}>
             <SafeAreaView>
-              <View style={[styles.modalHeader, { top: insets.top }]}>
+              <View
+                style={[
+                  styles.modalHeader,
+                  {
+                    top: insets.top,
+                    width: width,
+                  },
+                ]}
+              >
                 <TouchableOpacity
                   onPress={() => {
                     setShowScannerModal(false);
                   }}
-                  style={{ flex: 0 }}
+                  style={{
+                    flex: 1,
+                  }}
                 >
                   <CrossIcon size={20} color={COLORS.white} />
                 </TouchableOpacity>
               </View>
               <QRCodeScanner
                 onRead={(e) => {
-                  setCassetteId(e.data);
                   setShowScannerModal(false);
-                  checkCassette();
+                  setCassetteId(e.data);
+                  checkCassette(e.data);
                 }}
-                reactivate
                 cameraStyle={{
                   height: height,
                   width: width,
@@ -115,7 +124,7 @@ export default function CassetteSelectionScreen() {
                 }}
               >
                 <InputField
-                  defaultText="Kassettennummer"
+                  defaultText="Kassettennummer eingeben"
                   onValueChange={(i) => {
                     setLoadingError(false);
                     setCassetteId(i);
@@ -130,7 +139,7 @@ export default function CassetteSelectionScreen() {
                   alignItems: "center",
                 }}
                 onPress={() => {
-                  checkCassette();
+                  checkCassette(cassetteId);
                 }}
                 disabled={cassetteId === "" || isLoading}
               >
@@ -195,8 +204,10 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   modalHeader: {
+    flex: 1,
     flexDirection: "row",
     position: "absolute",
+    justifyContent: "flex-end",
     zIndex: 2,
     padding: 12,
   },

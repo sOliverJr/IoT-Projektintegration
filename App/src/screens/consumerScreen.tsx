@@ -10,11 +10,12 @@ import axios from "axios";
 import { useCallback, useState } from "react";
 import { Cassette } from "../shared/types";
 import Button from "../shared/button";
+import { CONFIG } from "../config";
 
 export default function ConsumerScreen() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  const [data, setData] = useState<Cassette>();
+  const [data, setData] = useState<Cassette | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingError, setLoadingError] = useState<boolean>(false);
   const [deviceId, setDeviceId] = useState<string>(
@@ -28,30 +29,31 @@ export default function ConsumerScreen() {
     useCallback(() => {
       setDeviceHash(usePersistStore.getState().deviceHash ?? "");
       setDeviceId(usePersistStore.getState().deviceId ?? "");
+
+      if (data === null && !loading) {
+        setLoadingError(false);
+        setLoading(true);
+
+        axios
+          .request({
+            method: "GET",
+            url: `http://${CONFIG.api_ip}:5000/cassette/${deviceId}`,
+            headers: {
+              device_hash: deviceHash,
+            },
+          })
+          .then((response) => {
+            setLoading(false);
+            setData(response.data);
+          })
+          .catch(() => {
+            setLoading(false);
+            setLoadingError(true);
+            setData(null);
+          });
+      }
     }, [])
   );
-
-  if (!data && !loading) {
-    setLoadingError(false);
-    setLoading(true);
-
-    axios
-      .request({
-        method: "GET",
-        url: `http://localhost:5000/cassette/${deviceId}`,
-        headers: {
-          device_hash: deviceHash,
-        },
-      })
-      .then((response) => {
-        setLoading(false);
-        setData(response.data);
-      })
-      .catch(() => {
-        setLoading(false);
-        setLoadingError(true);
-      });
-  }
 
   const formatTime = (time: number): string => {
     return time >= 10 ? time.toString() : `0${time}`;
