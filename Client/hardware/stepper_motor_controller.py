@@ -36,4 +36,9 @@ class StepperController:
     def reset_stepper(self):
         steps_to_reset = (self.current_position - self.steps_for_revolution) * -1
         print(steps_to_reset)
-        self.rotate_stepper_backwards(steps_to_reset)
+        while self.current_position != 0:
+            kit.stepper1.onestep(direction=stepper.BACKWARD, style=stepper.SINGLE)
+            self.current_position -= 1
+            time.sleep(0.01)
+        kit.stepper1.release()
+    
