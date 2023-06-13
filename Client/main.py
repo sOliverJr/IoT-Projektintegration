@@ -1,5 +1,5 @@
 from pprint import pprint
-from hardware.lid_button_controller import lid_is_open
+from hardware.lid_switch_controller import lid_is_open
 from hardware.stepper_motor_controller import rotate_stepper_motor
 from interfaces.server_api import get_device_cassette
 from datetime import date, datetime
