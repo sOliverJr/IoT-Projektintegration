@@ -5,3 +5,4 @@ pytz
 RPi.GPIO
 adafruit-circuitpython-motorkit
 gpiozero
+python-dotenv
