@@ -22,7 +22,7 @@ export default function SelectionScreen() {
 
   return (
     <View style={styles.view}>
-      <ScreenHeader disableBackButton>App-Verison auswählen</ScreenHeader>
+      <ScreenHeader disableBackButton>App-Version auswählen</ScreenHeader>
       <View style={{ flex: 1, justifyContent: "center" }}>
         <Button
           text="Patient"
