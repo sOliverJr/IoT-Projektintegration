@@ -24,7 +24,7 @@ def barrier_is_closed():
 
 
 def lid_is_closed():
-    return True
+    return False
 
 
 def button_is_pressed():

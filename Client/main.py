@@ -90,16 +90,16 @@ def change_cassette():
 
     unlock_lid()
     get_new_cassette()
-    current_cassette_count = 0
 
-    while lid_is_closed:        # wait until lid is opened
+    while lid_is_closed():        # wait until lid is opened
         continue
 
-    while not lid_is_closed:    # wait until lid is closed
+    while not lid_is_closed():    # wait until lid is closed
         continue
 
     lock_lid()
     running = True
+    current_cassette_count = 0
     cassette_changed = False
     cassette_is_empty = False
 
@@ -114,8 +114,9 @@ def update_cassette_thread():
     global current_cassette_id
     global env_file_path
     global cassette_changed
-    new_cassette_id = get_device_cassette(device_id, device_hash)
+    new_cassette_id = get_device_cassette(device_id, device_hash)['cassette_id']
     if current_cassette_id != new_cassette_id:
+        print('[CLIENT] New cassette detected.')
         current_cassette_id = new_cassette_id
         set_key(dotenv_path=env_file_path, key_to_set="CURRENT_CASSETTE_ID", value_to_set=new_cassette_id)
         cassette_changed = True

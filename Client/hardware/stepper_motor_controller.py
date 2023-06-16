@@ -1,7 +1,7 @@
-import board
-import time
 from adafruit_motor import stepper
 from adafruit_motorkit import MotorKit
+import board
+import time
 
 kit = MotorKit(i2c=board.I2C())
 
