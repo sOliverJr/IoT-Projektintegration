@@ -90,7 +90,7 @@ async def create_user(device_id, userName: str = Header(None), adminKey: str = H
 
 
 def start_api():
-    uvicorn.run(backend, host="localhost", port=int(os.getenv('BACKEND_PORT')))
+    uvicorn.run(backend, host="0.0.0.0", port=int(os.getenv('BACKEND_PORT')))
 
 
 if __name__ == "__main__":
