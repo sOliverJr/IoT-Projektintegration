@@ -46,7 +46,7 @@ export default function AddCassetteScreen() {
     axios
       .request({
         method: "PUT",
-        url: `http://${CONFIG.api_ip}:5000/cassette/${deviceId}`,
+        url: `http://${CONFIG.serverIp}:${CONFIG.serverPort}/cassette/${deviceId}`,
         headers: { device_hash: deviceHash, cassette_id: data },
       })
       .then((result) => {

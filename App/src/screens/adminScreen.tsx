@@ -1,12 +1,13 @@
 import { type NativeStackScreenProps } from "@react-navigation/native-stack";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
+  Touchable,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -20,13 +21,20 @@ import InputField from "../shared/textInput";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { CONFIG } from "../config";
+import { StackNavigationProps } from "../StackScreenProps";
 
-type Props = NativeStackScreenProps<RootStackParamList, "AdminScreen">;
+type Props = NativeStackScreenProps<StackNavigationProps<"AdminScreen">>;
+
+type Params = {
+  cassetteId: string;
+};
 
 export default function AdminScreen({ route }: Props) {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const params = route.params as Params;
 
   const [title, setTitle] = useState<string>("");
+  const [user, setUser] = useState<string>("");
   const [comment, setComment] = useState<string>("");
   const [frequency, setFrequency] = useState<number>(1);
   const [times, setTimes] = useState<number[]>([]);
@@ -84,7 +92,7 @@ export default function AdminScreen({ route }: Props) {
     axios
       .request({
         method: "PATCH",
-        url: `http://${CONFIG.api_ip}:5000/cassette/${route.params.cassetteId}`,
+        url: `http://${CONFIG.serverIp}:${CONFIG.serverPort}/cassette/${params.cassetteId}`,
         headers: {
           adminKey: "admin",
         },
@@ -147,9 +155,31 @@ export default function AdminScreen({ route }: Props) {
             onValueChange={(i) => setTitle(i)}
             value={title}
           />
-          <Text style={styles.label}>Kommentar</Text>
+          <Text style={styles.label}>Patient</Text>
           <InputField
-            defaultText="Kommentar (optional)"
+            defaultText="Nutzername des Patienten"
+            onValueChange={(i) => setUser(i)}
+            value={user}
+          />
+          <TouchableOpacity
+            style={styles.searchUserTouchable}
+            onPress={() => {
+              navigation.navigate("UserSelectionScreen", {
+                setUser: (user: string) => {
+                  setUser(user);
+                },
+                allowCreateUser: true,
+              });
+            }}
+          >
+            <Text style={{ color: COLORS.brand, fontWeight: "bold" }}>
+              Patientendatenbank durchsuchen
+            </Text>
+            <ArrowIcon size={16} orientation="right" color={COLORS.brand} />
+          </TouchableOpacity>
+          <Text style={styles.label}>Kommentar (optional)</Text>
+          <InputField
+            defaultText="Kommentar"
             onValueChange={(i) => setComment(i)}
             value={comment}
             multiline={true}
@@ -268,7 +298,7 @@ export default function AdminScreen({ route }: Props) {
           }}
           text="Konfiguration abschließen"
           stretch={false}
-          disabled={title === "" || times.length === 0}
+          disabled={title === "" || times.length === 0 || user === ""}
         />
       </View>
     </SafeAreaView>
@@ -368,5 +398,12 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 1,
     marginVertical: 6,
+  },
+  searchUserTouchable: {
+    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 12,
   },
 });
