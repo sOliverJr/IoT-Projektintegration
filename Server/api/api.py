@@ -16,27 +16,27 @@ async def ping():
 
 
 @backend.get('/auth_device/{device_id}')
-async def auth_device(device_id, request: Request):
+async def auth_device(device_id, devicePassword: str = Header(None)):
     """Authenticate"""
-    return route_service.auth_device(device_id, request.headers.get('device_pwd'))
+    return route_service.auth_device(device_id, devicePassword)
 
 
 @backend.get('/cassette_exists/{cassette_id}')
-async def cassette_exists(cassette_id, request: Request):
+async def cassette_exists(cassette_id, adminKey: str = Header(None)):
     """Tests if cassette exists"""
-    return route_service.cassette_exists(cassette_id, request.headers.get('adminKey'))
+    return route_service.cassette_exists(cassette_id, adminKey)
 
 
 @backend.get('/cassette/{device_id}')
-async def get_device_cassette(device_id, request: Request):
+async def get_device_cassette(device_id, deviceHash: str = Header(None)):
     """Get cassette of device"""
-    return route_service.get_device_cassette(device_id, request.headers.get('device_hash'))
+    return route_service.get_device_cassette(device_id, deviceHash)
 
 
 @backend.put('/cassette/{device_id}')
-async def change_cassette(device_id, request: Request):
+async def change_cassette(device_id, deviceHash: str = Header(None), cassetteID: str = Header(None)):
     """Change device cassette"""
-    return route_service.change_cassette(device_id, request.headers.get('device_hash'), request.headers.get('cassette_id'))
+    return route_service.change_cassette(device_id, deviceHash, cassetteID)
 
 
 @backend.patch('/cassette/{cassette_id}')
@@ -76,7 +76,7 @@ async def create_user(request_body: User, adminKey: str = Header(None)):
 
 # @backend.post('/example')
 # # Request: Body, header = Value of Header-field named 'header'
-# async def auth_device(request: AuthRequest, header: str = Header(None)):
+# async def auth_device(request_body: DataModel, headerName: str = Header(None)):
 #     """Authenticate"""
 #     print(header)
 #     return route_service.auth_device(request)
