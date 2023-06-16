@@ -1,14 +1,16 @@
-from pprint import pprint
+from datetime import date, datetime
+from dotenv import load_dotenv, set_key
+# Hardware functions
 from hardware.stepper_motor_controller import StepperController
 from hardware.magnet_switch_controller import lid_is_closed
 from hardware.servo_motor_controller import lock_lid, unlock_lid
+# from hardware.dummy_controller import *                                  # Dummy Hardware Funktionen
 from interfaces.server_api import get_device_cassette
-from datetime import date, datetime
-from dotenv import load_dotenv, set_key
 import os
-import time
 from pathlib import Path
+from pprint import pprint
 import threading
+import time
 
 
 running = False
@@ -40,8 +42,8 @@ def _reset_day():
     global todays_intakes
     todays_intakes = []
 
-    for time in intake_times:
-        todays_intakes.append([time, False])
+    for intake_time in intake_times:
+        todays_intakes.append([intake_time, False])
     pprint(todays_intakes)
 
 
@@ -128,7 +130,7 @@ def start_client():
     global cassette_fields
     global cassette_is_empty
     try:
-        x = threading.Thread(target=update_cassette_thread, daemon=True)        # deamon=True -> thread gets killed when script terminates
+        x = threading.Thread(target=update_cassette_thread, daemon=True)        # daemon=True -> thread gets killed when script terminates
         x.start()
         while True:
             if cassette_changed or not running:
