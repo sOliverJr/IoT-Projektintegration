@@ -4,14 +4,14 @@ import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 
 # Lid Switch (GND)
-lid_switch_pin = 18
+magnet_switch_pin = 23
 
 # Pull-Down parameter damit es nicht selber gebaut werden muss :)
-GPIO.setup(lid_switch_pin, GPIO.IN, GPIO.PUD_UP)
+GPIO.setup(magnet_switch_pin, GPIO.IN, GPIO.PUD_UP)
 
 
-def switch_is_on():
-    if GPIO.input(lid_switch_pin) == 0:
+def lid_is_closed():
+    if GPIO.input(magnet_switch_pin) == 0:
         return False
     else:
         return True

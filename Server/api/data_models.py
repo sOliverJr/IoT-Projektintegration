@@ -19,7 +19,21 @@ class GetCassetteRequest(BaseModel):
     device_hash: str
 
 
+class Cassette(BaseModel):
+    einnahme_frequenz: int
+    einnahme_uhrzeiten: list
+    user_name: str
+
+
 class UpdateCassetteRequest(BaseModel):
-    # admin_key: str
-    # cassette_id: str
-    cassette: dict
+    cassette: Cassette
+
+
+class IntakeMessage(BaseModel):
+    should_time: int
+    is_time: int
+
+
+class User(BaseModel):
+    user_name: str
+

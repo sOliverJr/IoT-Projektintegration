@@ -14,7 +14,8 @@ device = {
     'device_id': device_id,
     'device_pwd': device_pwd,
     'device_hash': device_hash,
-    'device_cassette': device_cassette
+    'device_cassette': None,
+    'device_user': None
 }
 
 print(device_handler.add_device(device))
@@ -30,7 +31,8 @@ einnahme_uhrzeiten = [800, 1230, 1890]
 cassette = {
     'cassette_id': cassette_id,
     'einnahme_frequenz': einnahme_frequenz,
-    'einnahme_uhrzeiten': einnahme_uhrzeiten
+    'einnahme_uhrzeiten': einnahme_uhrzeiten,
+    'user_name': None
 }
 
 print(cassette_handler.add_cassette(cassette))

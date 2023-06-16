@@ -41,4 +41,3 @@ class StepperController:
             self.current_position -= 1
             time.sleep(0.01)
         kit.stepper1.release()
-    

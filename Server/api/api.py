@@ -1,5 +1,5 @@
 from api.routes_services import RouteServices
-from api.data_models import UpdateCassetteRequest
+from api.data_models import UpdateCassetteRequest, IntakeMessage, User
 from fastapi import FastAPI, Header, Request
 import uvicorn
 from dotenv import load_dotenv
@@ -23,7 +23,7 @@ async def auth_device(device_id, request: Request):
 
 @backend.get('/cassette_exists/{cassette_id}')
 async def cassette_exists(cassette_id, request: Request):
-    """Get cassette of device"""
+    """Tests if cassette exists"""
     return route_service.cassette_exists(cassette_id, request.headers.get('adminKey'))
 
 
@@ -42,8 +42,29 @@ async def change_cassette(device_id, request: Request):
 @backend.patch('/cassette/{cassette_id}')
 async def update_cassette(cassette_id, request_body: UpdateCassetteRequest, adminKey: str = Header(None)):
     # adminKey-parameter without '_' because of http-header restrictions
-    """Update cassette"""
-    return route_service.update_cassette(cassette_id, adminKey, request_body.cassette)
+    """Update cassette and creates user if it does not exist yet"""
+    return route_service.update_cassette(cassette_id, adminKey, request_body.cassette.user_name, dict(request_body.cassette))
+
+
+@backend.post('/message/{device_id}')
+async def post_intake(device_id, request_body: IntakeMessage, deviceHash: str = Header(None)):
+    # deviceHash-parameter without '_' because of http-header restrictions
+    """Posts intake message"""
+    return route_service.post_intake(device_id, deviceHash, request_body.should_time, request_body.is_time)
+
+
+@backend.get('/user')
+async def get_all_users(adminKey: str = Header(None)):
+    # adminKey-parameter without '_' because of http-header restrictions
+    """Returns all users"""
+    return route_service.get_all_users(adminKey)
+
+
+@backend.post('/user')
+async def create_user(request_body: User, adminKey: str = Header(None)):
+    # adminKey-parameter without '_' because of http-header restrictions
+    """Creates user"""
+    return route_service.create_user(adminKey, request_body.user_name)
 
 
 # @backend.post('/example')

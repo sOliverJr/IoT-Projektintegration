@@ -1,10 +1,14 @@
 from pprint import pprint
-from hardware.lid_switch_controller import lid_is_open
-from hardware.stepper_motor_controller import rotate_stepper_motor
+from hardware.stepper_motor_controller import StepperController
+from hardware.magnet_switch_controller import lid_is_closed
+from hardware.servo_motor_controller import lock_lid, unlock_lid
 from interfaces.server_api import get_device_cassette
 from datetime import date, datetime
-from dotenv import load_dotenv
+from dotenv import load_dotenv, set_key
 import os
+import time
+from pathlib import Path
+import threading
 
 
 running = False
@@ -15,13 +19,18 @@ intake_times = []
 current_day = None
 last_intake_date = None
 todays_intakes = []
+current_cassette = None
 current_cassette_count = 0
 cassette_is_empty = False
 
+stepper_controller = StepperController()
+
+env_file_path = Path(".env")
 load_dotenv()
 device_id = os.getenv('DEVICE_ID')
-# device_pwd = os.getenv('DEVICE_PWD')
+device_pwd = os.getenv('DEVICE_PWD')
 device_hash = os.getenv('DEVICE_HASH')
+current_cassette_id = os.getenv('CURRENT_CASSETTE_ID')
 cassette_fields = int(os.getenv('CASSETTE_FIELDS'))
 # TODO cassette_fields should probably be gotten by database
 
@@ -75,8 +84,19 @@ def change_cassette():
     global cassette_changed
     global cassette_is_empty
     print('[CLIENT] Getting new cassette')
+    stepper_controller.reset_stepper()
+
+    unlock_lid()
     get_new_cassette()
     current_cassette_count = 0
+
+    while lid_is_closed:        # wait until lid is opened
+        continue
+
+    while not lid_is_closed:    # wait until lid is closed
+        continue
+
+    lock_lid()
     running = True
     cassette_changed = False
     cassette_is_empty = False
@@ -84,9 +104,20 @@ def change_cassette():
 
 def output_meds():
     global current_cassette_count
-    rotate_stepper_motor()
+    stepper_controller.rotate_stepper_forward(10)       # One cassette-field
     current_cassette_count += 1
-    # current_cassette_count = 16
+
+
+def update_cassette_thread():
+    global current_cassette_id
+    global env_file_path
+    global cassette_changed
+    new_cassette_id = get_device_cassette(device_id, device_hash)
+    if current_cassette_id != new_cassette_id:
+        current_cassette_id = new_cassette_id
+        set_key(dotenv_path=env_file_path, key_to_set="CURRENT_CASSETTE_ID", value_to_set=new_cassette_id)
+        cassette_changed = True
+    time.sleep(1)
 
 
 def start_client():
@@ -97,11 +128,12 @@ def start_client():
     global cassette_fields
     global cassette_is_empty
     try:
+        x = threading.Thread(target=update_cassette_thread, daemon=True)        # deamon=True -> thread gets killed when script terminates
+        x.start()
         while True:
-            while lid_is_open():
-                cassette_changed = True
             if cassette_changed or not running:
                 change_cassette()
+                continue
             if cassette_is_empty:       # Don't do anything while the cassette is empty
                 continue
             if last_intake_date != get_date():
