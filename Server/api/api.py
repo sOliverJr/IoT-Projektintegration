@@ -34,9 +34,9 @@ async def get_device_cassette(device_id, deviceHash: str = Header(None)):
 
 
 @backend.put('/cassette/{device_id}')
-async def change_cassette(device_id, deviceHash: str = Header(None), cassetteID: str = Header(None)):
+async def change_device_cassette(device_id, deviceHash: str = Header(None), cassetteID: str = Header(None)):
     """Change device cassette"""
-    return route_service.change_cassette(device_id, deviceHash, cassetteID)
+    return route_service.change_device_cassette(device_id, deviceHash, cassetteID)
 
 
 @backend.patch('/cassette/{cassette_id}')
@@ -72,6 +72,13 @@ async def create_user(request_body: User, adminKey: str = Header(None)):
     # adminKey-parameter without '_' because of http-header restrictions
     """Creates user"""
     return route_service.create_user(adminKey, request_body.user_name)
+
+
+@backend.put('/user/{device_id}')
+async def create_user(device_id, userName: str = Header(None), adminKey: str = Header(None)):
+    # adminKey-parameter without '_' because of http-header restrictions
+    """Creates user"""
+    return route_service.change_device_user(adminKey, device_id, userName)
 
 
 # @backend.post('/example')
