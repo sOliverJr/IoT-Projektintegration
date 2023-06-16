@@ -14,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList, usePersistStore } from "../../App";
 import axios from "axios";
+import { CONFIG } from "../config";
 
 export default function DeviceLoginScreen() {
   const [deviceId, setDeviceId] = useState<string>("");
@@ -33,7 +34,7 @@ export default function DeviceLoginScreen() {
     axios
       .request({
         method: "GET",
-        url: `http://localhost:5000/auth_device/${deviceId}`,
+        url: `http://${CONFIG.api_ip}:5000/auth_device/${deviceId}`,
         headers: { device_pwd: devicePassword },
       })
       .then((response) => {

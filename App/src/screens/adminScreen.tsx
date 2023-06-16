@@ -19,6 +19,7 @@ import ScreenHeader from "../shared/screenHeader";
 import InputField from "../shared/textInput";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { CONFIG } from "../config";
 
 type Props = NativeStackScreenProps<RootStackParamList, "AdminScreen">;
 
@@ -83,7 +84,7 @@ export default function AdminScreen({ route }: Props) {
     axios
       .request({
         method: "PATCH",
-        url: `http://localhost:5000/cassette/${route.params.cassetteId}`,
+        url: `http://${CONFIG.api_ip}:5000/cassette/${route.params.cassetteId}`,
         headers: {
           adminKey: "admin",
         },
@@ -118,28 +119,28 @@ export default function AdminScreen({ route }: Props) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={styles.view}>
-        <View style={{ flex: 1, padding: 12 }}>
-          <ScreenHeader
-            onNavigateBack={() => {
-              Alert.alert(
-                "Bearbeitung abbrechen?",
-                "Vorgenommene Änderungen werden verworfen",
-                [
-                  { text: "Weiter bearbeiten", style: "cancel" },
-                  {
-                    text: "Abbrechen",
-                    onPress: () => {
-                      navigation.navigate("CassetteSelectionScreen");
-                    },
+    <SafeAreaView style={[{ flex: 1 }, styles.view]}>
+      <View style={{ flex: 1, padding: 12 }}>
+        <ScreenHeader
+          onNavigateBack={() => {
+            Alert.alert(
+              "Bearbeitung abbrechen?",
+              "Vorgenommene Änderungen werden verworfen",
+              [
+                { text: "Weiter bearbeiten", style: "cancel" },
+                {
+                  text: "Abbrechen",
+                  onPress: () => {
+                    navigation.navigate("SelectionScreen");
                   },
-                ]
-              );
-            }}
-          >
-            Kasette verwalten
-          </ScreenHeader>
+                },
+              ]
+            );
+          }}
+        >
+          Kasette verwalten
+        </ScreenHeader>
+        <ScrollView>
           <Text style={styles.label}>Titel</Text>
           <InputField
             defaultText="Titel"
@@ -259,17 +260,17 @@ export default function AdminScreen({ route }: Props) {
               })}
             </View>
           </View>
-          <View style={styles.divider} />
-          <Button
-            onPress={() => {
-              updateCassette();
-            }}
-            text="Konfiguration abschließen"
-            stretch={false}
-            disabled={title === "" || times.length === 0}
-          />
-        </View>
-      </ScrollView>
+        </ScrollView>
+        <View style={styles.divider} />
+        <Button
+          onPress={() => {
+            updateCassette();
+          }}
+          text="Konfiguration abschließen"
+          stretch={false}
+          disabled={title === "" || times.length === 0}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -366,6 +367,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.disabled,
     width: "100%",
     height: 1,
-    marginVertical: 24,
+    marginVertical: 6,
   },
 });
