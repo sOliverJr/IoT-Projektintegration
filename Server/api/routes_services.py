@@ -71,6 +71,11 @@ class RouteServices:
         else:
             raise HTTPException(status_code=404, detail=server_response_content)
 
+    def get_all_user_messages(self, admin_key, user_name):
+        if admin_key != os.getenv('ADMIN_KEY'):
+            raise HTTPException(status_code=404, detail='Invalid admin key')
+        return self.message_db_handler.get_all_user_messages(user_name)
+
     def get_all_users(self, admin_key):
         if admin_key != os.getenv('ADMIN_KEY'):
             raise HTTPException(status_code=404, detail='Invalid admin key')

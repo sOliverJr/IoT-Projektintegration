@@ -46,6 +46,13 @@ async def update_cassette(cassette_id, request_body: UpdateCassetteRequest, admi
     return route_service.update_cassette(cassette_id, adminKey, request_body.cassette.user_name, dict(request_body.cassette))
 
 
+@backend.get('/message/{user_name}')
+async def post_intake(user_name, adminKey: str = Header(None)):
+    # adminKey-parameter without '_' because of http-header restrictions
+    """Get all messages from user"""
+    return route_service.get_all_user_messages(adminKey, user_name)
+
+
 @backend.post('/message/{device_id}')
 async def post_intake(device_id, request_body: IntakeMessage, deviceHash: str = Header(None)):
     # deviceHash-parameter without '_' because of http-header restrictions

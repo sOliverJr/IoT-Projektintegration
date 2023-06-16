@@ -156,6 +156,14 @@ class MessageHandler:
         self.message_collection.insert_one(item)
         return 'Post added successfully'
 
+    def get_all_user_messages(self, user_id):
+        query = {'user': user_id}
+        messages = list(self.message_collection.find(query, {'_id': 0}))
+        if len(messages) == 0:
+            return 'No messages for that user'
+        else:
+            return messages
+
 
 class UserHandler:
     def __init__(self):
