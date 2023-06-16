@@ -1,6 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { StyleSheet } from "react-native";
+import { StatusBar, StyleSheet } from "react-native";
 import "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { create } from "zustand";
@@ -12,11 +12,12 @@ import DeviceLoginScreen from "./src/screens/loginScreen";
 import SelectionScreen from "./src/screens/selectionScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AddCassetteScreen from "./src/screens/addCassetteScreen";
+import { COLORS } from "./src/colors";
 
 export type RootStackParamList = {
   SelectionScreen: undefined;
   DeviceLoginScreen: undefined;
-  AdminScreen: {cassetteId: string};
+  AdminScreen: { cassetteId: string };
   CassetteSelectionScreen: undefined;
   ConsumerScreen: undefined;
   AddCassetteScreen: undefined;
@@ -54,6 +55,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar backgroundColor={COLORS.white} barStyle="dark-content" />
         <NavigationContainer>
           <Stack.Navigator
             screenOptions={{
@@ -85,12 +87,3 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
