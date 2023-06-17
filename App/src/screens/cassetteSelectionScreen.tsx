@@ -3,6 +3,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import axios from "axios";
 import { useState } from "react";
 import {
+  Alert,
   Dimensions,
   Modal,
   SafeAreaView,
@@ -51,7 +52,7 @@ export default function CassetteSelectionScreen() {
         if (response.status === 200)
           navigation.navigate("AdminScreen", { cassetteId: data });
       })
-      .catch(() => {
+      .catch((e) => {
         setIsLoading(false);
         setLoadingError(true);
       });

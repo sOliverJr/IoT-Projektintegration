@@ -50,8 +50,8 @@ export default function UserSelectionScreen({
       .then((response) => {
         setUsers(response.data);
       })
-      .catch(() => {
-        Alert.alert("Fehler", "Fehler beim Laden der Nutzerliste", [
+      .catch((e) => {
+        Alert.alert("Fehler", `Fehler beim Laden der Nutzerliste. Error ${e}`, [
           {
             text: "OK",
             onPress: () => {
@@ -108,7 +108,7 @@ export default function UserSelectionScreen({
               text="Neuen Patientenaccount anlegen"
               style={styles.button}
               onPress={() => {
-                params.setUser(searchTerm)
+                params.setUser(searchTerm);
                 navigation.goBack();
               }}
             />

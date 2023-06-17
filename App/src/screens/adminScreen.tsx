@@ -122,8 +122,19 @@ export default function AdminScreen({ route }: Props) {
           ]
         );
       })
-      .catch(() => {
+      .catch((e) => {
         setIsLoading(false);
+
+        Alert.alert(
+          "Einnahme gespeichert",
+          `Fehler beim Speichern der Kassettenkonfiguration. Error: ${e}`,
+          [
+            {
+              text: "Weiter",
+              onPress: () => {},
+            },
+          ]
+        );
       });
   };
 

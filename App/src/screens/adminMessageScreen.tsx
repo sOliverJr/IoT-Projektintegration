@@ -63,19 +63,23 @@ export default function AdminMessageScreen({
 
         setMessages(response.data);
       })
-      .catch(() => {
+      .catch((e) => {
         setLoading(false);
 
-        Alert.alert("Fehler", "Fehler beim Laden der Nachrichten", [
-          {
-            text: "OK",
-            onPress: () => {
-              navigation.navigate("AdminSelectionScreen");
-              setUser(null);
-              setMessages(null);
+        Alert.alert(
+          "Fehler",
+          `Fehler beim Laden der Nachrichten. Error: ${e}`,
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                navigation.navigate("AdminSelectionScreen");
+                setUser(null);
+                setMessages(null);
+              },
             },
-          },
-        ]);
+          ]
+        );
       });
   }
 

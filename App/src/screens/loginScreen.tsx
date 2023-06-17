@@ -47,7 +47,7 @@ export default function DeviceLoginScreen() {
           navigation.navigate("ConsumerScreen");
         } else setWrongPassword(true);
       })
-      .catch((err) => {
+      .catch(() => {
         setWrongPassword(true);
       });
 
