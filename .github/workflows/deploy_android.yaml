@@ -8,7 +8,7 @@ on:
 
 env:
   APP_CENTER_TOKEN: ${{ secrets.APPCENTER_ANDROID_DEV_API_TOKEN }}
-  APP_NAME: ${{ 'Medikamentenausgabe'  }}
+  APP_NAME: ${{ 'sebastianmeyr/Medikamentenausgabe'  }}
   UPLOAD_FILE: ${{ 'App/android/app/build/outputs/apk/release/app-release.apk'  }}
   TESTING_GROUP: ${{ 'Collaborators' }}
 
