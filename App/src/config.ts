@@ -1,4 +1,5 @@
 export const CONFIG = {
-  api_ip: "localhost",
-  // api_ip: "169.254.155.18", // for testing on physical device
+  serverIp: "localhost",
+  serverPort: 5000,
+  adminPassword: "55*!9pXmafemPK7TazT5^!F!*",
 };

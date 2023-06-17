@@ -40,7 +40,7 @@ export default function CassetteSelectionScreen() {
     axios
       .request({
         method: "GET",
-        url: `http://${CONFIG.api_ip}:5000/cassette_exists/${data}`,
+        url: `http://${CONFIG.serverIp}:${CONFIG.serverPort}/cassette_exists/${data}`,
         headers: {
           adminKey: "admin",
         },

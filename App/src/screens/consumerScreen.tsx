@@ -37,7 +37,7 @@ export default function ConsumerScreen() {
         axios
           .request({
             method: "GET",
-            url: `http://${CONFIG.api_ip}:5000/cassette/${deviceId}`,
+            url: `http://${CONFIG.serverIp}:${CONFIG.serverPort}/cassette/${deviceId}`,
             headers: {
               device_hash: deviceHash,
             },
