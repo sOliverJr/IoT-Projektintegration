@@ -66,14 +66,15 @@ class RouteServices:
         else:
             raise HTTPException(status_code=404, detail=server_response_content)
 
-    def post_intake(self, device_id, device_hash, should_time, is_time):
+    def post_intake(self, device_id, device_hash, should_time, is_time, time_stamp):
         server_response_status_ok, server_response_content = self.device_db_handler.get_device_user(device_id, device_hash)
         if server_response_status_ok:
             message = {
                 'user': server_response_content,
                 'device': device_id,
-                'should_time': should_time,
-                'is_time': is_time
+                'shouldTime': should_time,
+                'isTime': is_time,
+                'timeStamp': time_stamp
             }
             self.message_db_handler.post_intake(message)
             return 'Success'

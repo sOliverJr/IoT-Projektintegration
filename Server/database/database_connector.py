@@ -175,7 +175,7 @@ class MessageHandler:
         query = {'user': user_id}
         messages = list(self.message_collection.find(query, {'_id': 0}))
         if len(messages) == 0:
-            return 'No messages for that user'
+            return []
         else:
             return messages
 

@@ -30,8 +30,9 @@ class UpdateCassetteRequest(BaseModel):
 
 
 class IntakeMessage(BaseModel):
-    should_time: int
-    is_time: int
+    shouldTime: int
+    isTime: int
+    timeStamp: int
 
 
 class User(BaseModel):

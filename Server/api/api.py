@@ -57,7 +57,7 @@ async def post_intake(user_name, adminKey: str = Header(None)):
 async def post_intake(device_id, request_body: IntakeMessage, deviceHash: str = Header(None)):
     # deviceHash-parameter without '_' because of http-header restrictions
     """Posts intake message"""
-    return route_service.post_intake(device_id, deviceHash, request_body.should_time, request_body.is_time)
+    return route_service.post_intake(device_id, deviceHash, request_body.shouldTime, request_body.isTime, request_body.timeStamp)
 
 
 @backend.get('/user')
