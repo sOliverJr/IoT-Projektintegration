@@ -70,7 +70,7 @@ class DeviceHandler:
     def _cassette_user_and_device_user_match(self, cassette_id, device_user_name):
         """Tests if cassette-user and device_user match"""
         query = {'cassette_id': cassette_id}
-        if self.cassette_collection.find_one(query, {'_id': 0})['user_name'] == device_user_name:
+        if self.cassette_collection.find_one(query, {'_id': 0})['username'] == device_user_name:
             return True
         else:
             return False
