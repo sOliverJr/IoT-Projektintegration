@@ -13,14 +13,20 @@ import SelectionScreen from "./src/screens/selectionScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AddCassetteScreen from "./src/screens/addCassetteScreen";
 import { COLORS } from "./src/colors";
+import UserSelectionScreen from "./src/screens/userSelectionScreen";
+import AdminSelectionScreen from "./src/screens/adminSelectionScreen";
+import AdminMessageScreen from "./src/screens/adminMessageScreen";
 
 export type RootStackParamList = {
   SelectionScreen: undefined;
   DeviceLoginScreen: undefined;
+  AdminSelectionScreen: undefined;
   AdminScreen: { cassetteId: string };
+  AdminMessageScreen: { user: string | null };
   CassetteSelectionScreen: undefined;
   ConsumerScreen: undefined;
   AddCassetteScreen: undefined;
+  UserSelectionScreen: { setUser: (user: string) => void, allowCreateUser: boolean };
 };
 
 type PersistStore = {
@@ -72,6 +78,18 @@ export default function App() {
               component={DeviceLoginScreen}
             />
             <Stack.Screen name="AdminScreen" component={AdminScreen} />
+            <Stack.Screen
+              name="AdminSelectionScreen"
+              component={AdminSelectionScreen}
+            />
+            <Stack.Screen
+              name="AdminMessageScreen"
+              component={AdminMessageScreen}
+            />
+            <Stack.Screen
+              name="UserSelectionScreen"
+              component={UserSelectionScreen}
+            />
             <Stack.Screen name="ConsumerScreen" component={ConsumerScreen} />
             <Stack.Screen
               name="CassetteSelectionScreen"

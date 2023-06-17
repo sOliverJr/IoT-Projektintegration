@@ -22,7 +22,7 @@ export default function SelectionScreen() {
 
   return (
     <View style={styles.view}>
-      <ScreenHeader disableBackButton>App-Verison auswählen</ScreenHeader>
+      <ScreenHeader disableBackButton>App-Version auswählen</ScreenHeader>
       <View style={{ flex: 1, justifyContent: "center" }}>
         <Button
           text="Patient"
@@ -35,9 +35,9 @@ export default function SelectionScreen() {
           style={{ marginBottom: 12, marginTop: 24 }}
         />
         <Button
-          text="Kassettenaverwaltung"
+          text="Verwaltung"
           onPress={() => {
-            navigation.navigate("CassetteSelectionScreen");
+            navigation.navigate("AdminSelectionScreen");
           }}
           stretch
         />

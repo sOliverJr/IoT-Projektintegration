@@ -34,7 +34,7 @@ export default function DeviceLoginScreen() {
     axios
       .request({
         method: "GET",
-        url: `http://${CONFIG.api_ip}:5000/auth_device/${deviceId}`,
+        url: `http://${CONFIG.serverIp}:${CONFIG.serverPort}/auth_device/${deviceId}`,
         headers: { device_pwd: devicePassword },
       })
       .then((response) => {
