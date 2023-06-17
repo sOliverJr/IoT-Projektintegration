@@ -42,7 +42,7 @@ export default function CassetteSelectionScreen() {
         method: "GET",
         url: `http://${CONFIG.serverIp}:${CONFIG.serverPort}/cassette_exists/${data}`,
         headers: {
-          adminKey: "admin",
+          adminKey: CONFIG.adminKey,
         },
       })
       .then((response) => {

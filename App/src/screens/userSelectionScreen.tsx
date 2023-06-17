@@ -108,7 +108,7 @@ export default function UserSelectionScreen({
               text="Neuen Patientenaccount anlegen"
               style={styles.button}
               onPress={() => {
-                // TODO: api -> create user
+                params.setUser(searchTerm)
                 navigation.goBack();
               }}
             />

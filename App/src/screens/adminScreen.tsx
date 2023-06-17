@@ -94,14 +94,15 @@ export default function AdminScreen({ route }: Props) {
         method: "PATCH",
         url: `http://${CONFIG.serverIp}:${CONFIG.serverPort}/cassette/${params.cassetteId}`,
         headers: {
-          adminKey: "admin",
+          adminKey: CONFIG.adminKey,
         },
         data: {
           cassette: {
-            einnahme_frequenz: frequency,
-            einnahme_uhrzeiten: times,
+            einnahmeFrequenz: frequency,
+            einnahmeUhrzeiten: times,
             comment: comment,
             title: title,
+            username: user,
           },
         },
       })
