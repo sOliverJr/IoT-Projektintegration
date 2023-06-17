@@ -35,9 +35,9 @@ export default function SelectionScreen() {
           style={{ marginBottom: 12, marginTop: 24 }}
         />
         <Button
-          text="Kassettenaverwaltung"
+          text="Verwaltung"
           onPress={() => {
-            navigation.navigate("CassetteSelectionScreen");
+            navigation.navigate("AdminSelectionScreen");
           }}
           stretch
         />

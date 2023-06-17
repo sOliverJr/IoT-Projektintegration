@@ -41,8 +41,17 @@ class RouteServices:
         else:
             raise HTTPException(status_code=404, detail=server_response_content)
 
-    def change_cassette(self, device_id, device_hash, cassette_id):
+    def change_device_cassette(self, device_id, device_hash, cassette_id):
         server_response_status_ok, server_response_content = self.device_db_handler.change_device_cassette(cassette_id, device_id, device_hash)
+        if server_response_status_ok:
+            return server_response_content
+        else:
+            raise HTTPException(status_code=404, detail=server_response_content)
+
+    def change_device_user(self, admin_key, device_id, user_name):
+        if admin_key != os.getenv('ADMIN_KEY'):
+            raise HTTPException(status_code=404, detail='Invalid admin key')
+        server_response_status_ok, server_response_content = self.device_db_handler.change_device_user(device_id, user_name)
         if server_response_status_ok:
             return server_response_content
         else:
@@ -70,6 +79,11 @@ class RouteServices:
             return 'Success'
         else:
             raise HTTPException(status_code=404, detail=server_response_content)
+
+    def get_all_user_messages(self, admin_key, user_name):
+        if admin_key != os.getenv('ADMIN_KEY'):
+            raise HTTPException(status_code=404, detail='Invalid admin key')
+        return self.message_db_handler.get_all_user_messages(user_name)
 
     def get_all_users(self, admin_key):
         if admin_key != os.getenv('ADMIN_KEY'):

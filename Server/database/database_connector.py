@@ -7,6 +7,8 @@ class DeviceHandler:
         self.backend_db = self.client["BACKEND_DB"]
         self.device_collection = self.backend_db['devices']
         self.cassette_collection = self.backend_db['cassettes']
+        self.user_collection = self.backend_db['users']
+        self.user_handler = UserHandler()
 
     def test_connection(self):
         return self.client.list_database_names()
@@ -103,6 +105,19 @@ class DeviceHandler:
         else:
             return True, device['device_user']
 
+    def change_device_user(self, device_id, user_name):
+        query = {'device_id': device_id}
+        device = self.device_collection.find_one(query, {'_id': 0})
+        user = self.user_collection.find_one({'user_name': user_name}, {'_id': 0})
+        if device is None:
+            return False, 'No device with that ID'
+        if user is None:
+            self.user_handler.create_user(user_name)
+
+        updated_device = {"$set": {'device_user': user_name}}
+        self.device_collection.update_one(query, updated_device)
+        return True, {'device_user': user_name}
+
 
 class CassetteHandler:
     def __init__(self):
@@ -155,6 +170,14 @@ class MessageHandler:
         """Posts intake-message"""
         self.message_collection.insert_one(item)
         return 'Post added successfully'
+
+    def get_all_user_messages(self, user_id):
+        query = {'user': user_id}
+        messages = list(self.message_collection.find(query, {'_id': 0}))
+        if len(messages) == 0:
+            return 'No messages for that user'
+        else:
+            return messages
 
 
 class UserHandler:
