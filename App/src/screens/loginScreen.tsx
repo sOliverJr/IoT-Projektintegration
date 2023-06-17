@@ -35,7 +35,7 @@ export default function DeviceLoginScreen() {
       .request({
         method: "GET",
         url: `http://${CONFIG.serverIp}:${CONFIG.serverPort}/auth_device/${deviceId}`,
-        headers: { device_pwd: devicePassword },
+        headers: { devicePassword: devicePassword },
       })
       .then((response) => {
         if (response.status === 200) {

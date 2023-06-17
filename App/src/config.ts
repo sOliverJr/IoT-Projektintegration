@@ -1,5 +1,5 @@
 export const CONFIG = {
-  serverIp: "localhost",
+  serverIp: "nothing-of-interest.com",
   serverPort: 5000,
-  adminPassword: "55*!9pXmafemPK7TazT5^!F!*",
+  adminKey: "55*!9pXmafemPK7TazT5^!F!*",
 };

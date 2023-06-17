@@ -1,17 +1,16 @@
-import { Alert, StyleSheet, Text, View } from "react-native";
-import ScreenHeader from "../shared/screenHeader";
-import { COLORS } from "../colors";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import Label from "../shared/label";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList, usePersistStore } from "../../App";
 import axios from "axios";
 import { useCallback, useState } from "react";
-import { Cassette } from "../shared/types";
-import Button from "../shared/button";
+import { Alert, StyleSheet, Text, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { RootStackParamList, usePersistStore } from "../../App";
+import { COLORS } from "../colors";
 import { CONFIG } from "../config";
-
+import Button from "../shared/button";
+import Label from "../shared/label";
+import ScreenHeader from "../shared/screenHeader";
+import { Cassette } from "../types/Cassette";
 export default function ConsumerScreen() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
@@ -39,7 +38,7 @@ export default function ConsumerScreen() {
             method: "GET",
             url: `http://${CONFIG.serverIp}:${CONFIG.serverPort}/cassette/${deviceId}`,
             headers: {
-              device_hash: deviceHash,
+              deviceHash: deviceHash,
             },
           })
           .then((response) => {
@@ -127,43 +126,56 @@ export default function ConsumerScreen() {
         </TouchableOpacity>
       </View>
       <Label size="title">Aktuelle Einnahme</Label>
-      {data && !loadingError ? (
-        <View style={styles.consumptionView}>
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
-          >
+      {loading ? (
+        <Text style={styles.style}>Lädt...</Text>
+      ) : data && !loadingError ? (
+        <View>
+          <View style={styles.consumptionView}>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <Label
+                size="default"
+                style={{ color: COLORS.white, marginBottom: 12 }}
+              >
+                {data.title ?? "Einnahme"}
+              </Label>
+              <Text style={{ color: COLORS.white }}>
+                Kassette: {data.cassette_id}
+              </Text>
+            </View>
+            <Label size="title" style={{ color: COLORS.white }}>
+              {`${frequencyAsText(data.einnahmeFrequenz)}, um`}
+            </Label>
+            <View style={styles.timesView}>
+              {data.einnahmeUhrzeiten.map((time) => {
+                return (
+                  <View style={styles.timeItem} key={time}>
+                    <Text
+                      style={{ color: COLORS.brand, fontWeight: "bold" }}
+                    >{`${formatTime(Math.floor(time / 100))}:${formatTime(
+                      time % 100
+                    )}`}</Text>
+                  </View>
+                );
+              })}
+            </View>
             <Label
               size="default"
-              style={{ color: COLORS.white, marginBottom: 12 }}
+              style={{ color: COLORS.white, marginTop: 12 }}
             >
-              {data.title ?? "Einnahme"}
+              Kommentar:
             </Label>
             <Text style={{ color: COLORS.white }}>
-              Kassette: {data.cassette_id}
+              {data.comment ?? "kein Kommentar"}
             </Text>
           </View>
-          <Label size="title" style={{ color: COLORS.white }}>
-            {`${frequencyAsText(data.einnahme_frequenz)}, um`}
-          </Label>
-          <View style={styles.timesView}>
-            {data.einnahme_uhrzeiten.map((time) => {
-              return (
-                <View style={styles.timeItem} key={time}>
-                  <Text
-                    style={{ color: COLORS.brand, fontWeight: "bold" }}
-                  >{`${formatTime(Math.floor(time / 100))}:${formatTime(
-                    time % 100
-                  )}`}</Text>
-                </View>
-              );
-            })}
-          </View>
-          <Label size="default" style={{ color: COLORS.white, marginTop: 12 }}>
-            Kommentar:
-          </Label>
-          <Text style={{ color: COLORS.white }}>
-            {data.comment ?? "kein Kommentar"}
-          </Text>
+          <Button
+            text="Kassette wechseln"
+            onPress={() => {
+              navigation.navigate("AddCassetteScreen");
+            }}
+          />
         </View>
       ) : (
         <View>
@@ -226,5 +238,9 @@ const styles = StyleSheet.create({
   },
   errorText: {
     marginVertical: 24,
+  },
+  style: {
+    textAlign: "center",
+    marginTop: 24,
   },
 });

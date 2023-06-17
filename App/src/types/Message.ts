@@ -1,5 +1,7 @@
 export type Message = {
+  user: string;
+  device: string;
   shouldTime: number;
   isTime: number;
-  timestamp: number;
+  timeStamp: number
 };

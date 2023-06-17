@@ -1,7 +1,8 @@
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { StackNavigationProp } from "@react-navigation/stack";
 import {
+  Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -11,10 +12,12 @@ import {
 } from "react-native";
 import { RootStackParamList } from "../../App";
 import { StackNavigationProps } from "../StackScreenProps";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import ScreenHeader from "../shared/screenHeader";
 import { COLORS } from "../colors";
 import { Message } from "../types/Message";
+import { CONFIG } from "../config";
+import axios from "axios";
 
 type Props = NativeStackScreenProps<StackNavigationProps<"AdminMessageScreen">>;
 
@@ -29,32 +32,64 @@ export default function AdminMessageScreen({
   const params = route.params as Params;
 
   const [user, setUser] = useState<string | null>(params.user);
-  // TODO: api -> get messages
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      shouldTime: 1300,
-      isTime: 1330,
-      timestamp: Date.now(),
-    },
-    {
-      shouldTime: 1300,
-      isTime: 1400,
-      timestamp: Date.now(),
-    },
-    {
-      shouldTime: 1300,
-      isTime: 1230,
-      timestamp: Date.now(),
-    },
-    {
-      shouldTime: 1300,
-      isTime: 1530,
-      timestamp: Date.now(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[] | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  if (user !== "" && user !== null && messages === null && !loading) {
+    if (!loading) setLoading(true);
+
+    axios
+      .request({
+        method: "GET",
+        url: `http://${CONFIG.serverIp}:${CONFIG.serverPort}/message/${user}`,
+        headers: {
+          adminKey: CONFIG.adminKey,
+        },
+      })
+      .then((response) => {
+        setLoading(false);
+
+        const newMessages: Message[] = [];
+
+        response.data.forEach((element: Message) => {
+          newMessages.push({
+            user: element.user,
+            isTime: element.isTime,
+            shouldTime: element.shouldTime,
+            device: element.device,
+            timeStamp: element.timeStamp,
+          });
+        });
+
+        setMessages(response.data);
+      })
+      .catch(() => {
+        setLoading(false);
+
+        Alert.alert("Fehler", "Fehler beim Laden der Nachrichten", [
+          {
+            text: "OK",
+            onPress: () => {
+              navigation.navigate("AdminSelectionScreen");
+              setUser(null);
+              setMessages(null);
+            },
+          },
+        ]);
+      });
+  }
 
   const formatTime = (time: number): string => {
     return time >= 10 ? time.toString() : `0${time}`;
+  };
+
+  const formatDate = (timestamp: number): string => {
+    const timeString = timestamp.toString();
+
+    return `${timeString.slice(0, -6)}.${timeString.slice(
+      -6,
+      -4
+    )}.${timeString.slice(-4)}`;
   };
 
   if (user === null) {
@@ -65,12 +100,8 @@ export default function AdminMessageScreen({
       allowCreateUser: false,
     });
   } else if (user === "") {
-    navigation.goBack();
+    navigation.navigate("AdminSelectionScreen");
   }
-
-  const timestampToDate = (timestamp: number) => {
-    return new Date(timestamp);
-  };
 
   return (
     <SafeAreaView style={styles.view}>
@@ -88,6 +119,8 @@ export default function AdminMessageScreen({
                 },
                 allowCreateUser: false,
               });
+              setUser(null);
+              setMessages(null);
             }}
           >
             <Text style={styles.selectUserButton}>ÄNDERN</Text>
@@ -95,20 +128,14 @@ export default function AdminMessageScreen({
         </View>
       </View>
       <ScrollView style={styles.messageList}>
-        {messages.length > 0 ? (
+        {messages && messages.length > 0 ? (
           messages.map((message: Message) => {
             return (
               <View style={styles.messageItem} key={messages.indexOf(message)}>
                 <View style={styles.messageHeader}>
                   <Text style={styles.messageTitle}>Fehlerhafte Einnahme</Text>
                   <Text style={styles.messageDate}>
-                    {timestampToDate(message.timestamp).toLocaleString(
-                      "de-DE",
-                      {
-                        timeZone: "Europe/Berlin",
-                        hour12: false,
-                      }
-                    )}
+                    {formatDate(message.timeStamp)}
                   </Text>
                 </View>
                 <Text>
@@ -126,12 +153,12 @@ export default function AdminMessageScreen({
               </View>
             );
           })
-        ) : (
+        ) : !loading ? (
           <Text style={styles.noMessagesText}>
             Für diesen Patienten liegen zum aktuellen Zeitpunkt keine Meldungen
             vor
           </Text>
-        )}
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
