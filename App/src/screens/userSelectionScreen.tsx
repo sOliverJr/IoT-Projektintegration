@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp, StackScreenProps } from "@react-navigation/stack";
 import { useState } from "react";
 import {
+  Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -16,6 +17,8 @@ import InputField from "../shared/textInput";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { StackNavigationProps } from "../StackScreenProps";
 import Button from "../shared/button";
+import axios from "axios";
+import { CONFIG } from "../config";
 
 type Props = NativeStackScreenProps<
   StackNavigationProps<"UserSelectionScreen">
@@ -33,34 +36,36 @@ export default function UserSelectionScreen({
   const params = route.params as Params;
 
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [users, setUsers] = useState<string[] | null>(null);
 
-  // TODO: api -> get users
-  const testData = [
-    "Test 1",
-    "Test 2",
-    "Test 3",
-    "Test 4",
-    "Test 5",
-    "Test 6",
-    "Test 7",
-    "Test 8",
-    "Test 9",
-    "Test 10",
-    "Test 11",
-    "Test 12",
-    "Test 13",
-    "Test 14",
-    "Test 15",
-    "Test 16",
-    "Test 17",
-    "Test 18",
-    "Test 19",
-    "Test 20",
-  ];
+  if (users === null) {
+    axios
+      .request({
+        method: "GET",
+        url: `http://${CONFIG.serverIp}:${CONFIG.serverPort}/user`,
+        headers: {
+          adminKey: CONFIG.adminKey,
+        },
+      })
+      .then((response) => {
+        setUsers(response.data);
+      })
+      .catch(() => {
+        Alert.alert("Fehler", "Fehler beim Laden der Nutzerliste", [
+          {
+            text: "OK",
+            onPress: () => {
+              navigation.goBack();
+            },
+          },
+        ]);
+      });
+  }
 
-  const searchResults = testData.filter((user) =>
-    user.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const searchResults =
+    users?.filter((user) =>
+      user.toLowerCase().includes(searchTerm.toLowerCase())
+    ) ?? [];
 
   return (
     <SafeAreaView style={[{ flex: 1 }, styles.view]}>
