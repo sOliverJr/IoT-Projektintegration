@@ -47,10 +47,9 @@ export default function AddCassetteScreen() {
       .request({
         method: "PUT",
         url: `http://${CONFIG.serverIp}:${CONFIG.serverPort}/cassette/${deviceId}`,
-        headers: { device_hash: deviceHash, cassette_id: data },
+        headers: { deviceHash: deviceHash, cassetteID: data },
       })
       .then((result) => {
-        console.log(result.statusText);
         navigation.navigate("ConsumerScreen");
       })
       .catch(() => {
