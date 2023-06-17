@@ -43,7 +43,7 @@ async def change_device_cassette(device_id, deviceHash: str = Header(None), cass
 async def update_cassette(cassette_id, request_body: UpdateCassetteRequest, adminKey: str = Header(None)):
     # adminKey-parameter without '_' because of http-header restrictions
     """Update cassette and creates user if it does not exist yet"""
-    return route_service.update_cassette(cassette_id, adminKey, request_body.cassette.user_name, dict(request_body.cassette))
+    return route_service.update_cassette(cassette_id, adminKey, request_body.cassette.username, dict(request_body.cassette))
 
 
 @backend.get('/message/{user_name}')

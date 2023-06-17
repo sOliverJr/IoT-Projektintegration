@@ -20,9 +20,11 @@ class GetCassetteRequest(BaseModel):
 
 
 class Cassette(BaseModel):
-    einnahme_frequenz: int
-    einnahme_uhrzeiten: list
-    user_name: str
+    einnahmeFrequenz: int
+    einnahmeUhrzeiten: list
+    username: str
+    comment: str
+    title: str
 
 
 class UpdateCassetteRequest(BaseModel):
