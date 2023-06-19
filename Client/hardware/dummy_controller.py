@@ -29,3 +29,23 @@ def lid_is_closed():
 
 def button_is_pressed():
     return True
+
+
+def activate_laser_barrier():
+    ...
+
+
+def deactivate_laser_barrier():
+    ...
+
+
+def active_light():
+    ...
+
+
+def deactivate_light():
+    ...
+
+
+def play_sound():
+    ...

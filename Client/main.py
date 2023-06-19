@@ -4,8 +4,12 @@ from dotenv import load_dotenv, set_key
 from hardware.stepper_motor_controller import StepperController
 from hardware.magnet_switch_controller import lid_is_closed
 from hardware.servo_motor_controller import lock_lid, unlock_lid
+from hardware.output_button_controller import button_is_pressed
+from hardware.laser_barrier_controller import barrier_is_closed, activate_laser_barrier, deactivate_laser_barrier
+from hardware.led_controller import active_light, deactivate_light
+from hardware.speaker_controller import play_sound
 # from hardware.dummy_controller import *                                  # Dummy Hardware Funktionen
-from interfaces.server_api import get_device_cassette
+from interfaces.server_api import get_device_cassette, post_intake_message
 import os
 from pathlib import Path
 from pprint import pprint
@@ -60,7 +64,7 @@ def get_new_cassette():
 
 
 def get_date():
-    return date.today().strftime("%Y%m%d")
+    return date.today().strftime("%d%m%Y")
 
 
 def get_time():
@@ -104,10 +108,53 @@ def change_cassette():
     cassette_is_empty = False
 
 
-def output_meds():
+def sound_controller(last_alarm_time):
+    """
+    Plays sound if elapsed time >= 5min
+    Returns current time if sound was played
+    Returns last_alert_time if no sound was played
+    """
+    current_time = datetime.now()
+    delta_time = current_time - last_alarm_time
+    if delta_time.minutes >= 5:
+        play_sound()
+        return datetime.now()
+    else:
+        return last_alarm_time
+
+
+def output_meds_thread(should_time):
     global current_cassette_count
+    global device_id
+    global device_hash
+    global cassette_is_empty
+    last_alarm_time = datetime.now()
+    active_light()
+
+    # Wait until button is pressed
+    while not button_is_pressed():
+        last_alarm_time = sound_controller(last_alarm_time)
+
+    # Dispense meds
     stepper_controller.rotate_stepper_forward(10)       # One cassette-field
+    activate_laser_barrier()
+
+    # Wait until meds are taken
+    while not barrier_is_closed():
+        last_alarm_time = sound_controller(last_alarm_time)
+
+    deactivate_laser_barrier()
+    deactivate_light()
+
+    current_time = datetime.now()
+    delta_time = current_time - last_alarm_time
+    if delta_time.minutes >= 30:
+        post_intake_message(device_id, device_hash, should_time, get_time(), get_date())
+
     current_cassette_count += 1
+    if current_cassette_count >= cassette_fields:
+        print('[CLIENT] ATTENTION: cassette is now empty')
+        cassette_is_empty = True
 
 
 def update_cassette_thread():
@@ -143,10 +190,8 @@ def start_client():
                 _reset_day()
                 last_intake_date = get_date()
             if intake_is_due():
-                output_meds()
-                if current_cassette_count >= cassette_fields:
-                    print('[CLIENT] ATTENTION: cassette is now empty')
-                    cassette_is_empty = True
+                x = threading.Thread(target=output_meds_thread)
+                x.start()
 
     except KeyboardInterrupt:
         print('[CLIENT] Exiting')

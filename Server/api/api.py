@@ -47,7 +47,7 @@ async def update_cassette(cassette_id, request_body: UpdateCassetteRequest, admi
 
 
 @backend.get('/message/{user_name}')
-async def post_intake(user_name, adminKey: str = Header(None)):
+async def get_all_user_messages(user_name, adminKey: str = Header(None)):
     # adminKey-parameter without '_' because of http-header restrictions
     """Get all messages from user"""
     return route_service.get_all_user_messages(adminKey, user_name)
@@ -75,7 +75,7 @@ async def create_user(request_body: User, adminKey: str = Header(None)):
 
 
 @backend.put('/user/{device_id}')
-async def create_user(device_id, userName: str = Header(None), adminKey: str = Header(None)):
+async def change_device_user(device_id, userName: str = Header(None), adminKey: str = Header(None)):
     # adminKey-parameter without '_' because of http-header restrictions
     """Creates user"""
     return route_service.change_device_user(adminKey, device_id, userName)

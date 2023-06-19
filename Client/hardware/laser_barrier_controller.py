@@ -15,6 +15,14 @@ GPIO.setup(laser_pin, GPIO.OUT)
 GPIO.output(laser_pin, GPIO.LOW)
 
 
+def activate_laser_barrier():
+    GPIO.output(laser_pin, GPIO.HIGH)
+
+
+def deactivate_laser_barrier():
+    GPIO.output(laser_pin, GPIO.LOW)
+
+
 def barrier_is_closed():
     if GPIO.input(light_sensor_pin) == 0:
         return True
