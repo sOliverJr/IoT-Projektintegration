@@ -7,8 +7,8 @@ servoPIN = 25
 # 2,5 -> cable side
 # 7,5 -> middle
 # 12,5 -> opposed cable side
-unlocked_position = 12.5
-locked_position = 7.5
+locked_position = 12.5
+unlocked_position = 7.5
 
 
 GPIO.setmode(GPIO.BCM)
@@ -25,7 +25,6 @@ def set_servo_cycle(position):
 
 def lock_lid():
     set_servo_cycle(locked_position)
-    # servo.max()
 
 
 def unlock_lid():
