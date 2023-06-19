@@ -149,7 +149,10 @@ def output_meds_thread(should_time):
     # Dispense meds
     stepper_controller.rotate_stepper_forward(10)       # One cassette-field
 
-    time.sleep(2)       # Wait until meds have fallen down
+    # Wait for meds to fall down
+    print('[OUTPUT MEDS THREAD] Waiting for meds to open the laser barrier')
+    while barrier_is_closed():
+        last_alarm_time = sound_controller(last_alarm_time)
 
     # Wait until meds are taken
     print('[OUTPUT MEDS THREAD] Waiting for user to take the meds')
