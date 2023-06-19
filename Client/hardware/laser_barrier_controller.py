@@ -24,6 +24,7 @@ def deactivate_laser_barrier():
 
 
 def barrier_is_closed():
+    """Returns True if barrier is closed and no object is in the way"""
     if GPIO.input(light_sensor_pin) == 0:
         return True
     else:
