@@ -122,6 +122,7 @@ def sound_controller(last_alarm_time):
     current_time = datetime.now()
     delta_time = current_time - last_alarm_time
     if int(delta_time.seconds / 60) >= 5:
+        print('[OUTPUT MEDS THREAD] Five minutes have passed, playing sound')
         play_sound()
         return datetime.now()
     else:
@@ -133,6 +134,7 @@ def output_meds_thread(should_time):
     global device_id
     global device_hash
     global cassette_is_empty
+    start_time = datetime.now()
     last_alarm_time = datetime.now()
     activate_light()
 
@@ -167,7 +169,7 @@ def output_meds_thread(should_time):
     deactivate_light()
 
     current_time = datetime.now()
-    delta_time = current_time - last_alarm_time
+    delta_time = current_time - start_time
     if int(delta_time.seconds / 60) >= 30:
         print('[OUTPUT MEDS THREAD] Intake was late, posting message')
         post_intake_message(device_id, device_hash, should_time, get_time(), get_date())
