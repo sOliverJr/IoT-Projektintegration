@@ -20,15 +20,18 @@ def unlock_lid():
 
 
 def barrier_is_closed():
-    return True
+    return_value = True
+    return return_value
 
 
 def lid_is_closed():
-    return False
+    return_value = False
+    return return_value
 
 
 def button_is_pressed():
-    return True
+    return_value = True
+    return return_value
 
 
 def activate_laser_barrier():
@@ -39,7 +42,7 @@ def deactivate_laser_barrier():
     ...
 
 
-def active_light():
+def activate_light():
     ...
 
 

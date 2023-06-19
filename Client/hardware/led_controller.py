@@ -1,5 +1,5 @@
 
-def active_light():
+def activate_light():
     ...
 
 

@@ -1,5 +1,7 @@
 from database.database_connector import *
 from hash.sha256 import *
+from datetime import datetime
+import time
 
 # ------------------ Devices ------------------ #
 device_handler = DeviceHandler()
@@ -37,3 +39,12 @@ cassette = {
 # print(hash_sha256_string('anderer Test'))
 
 # print(device_handler.change_device_cassette('cassette_1', device_id, device_hash))
+
+time_past = datetime.now()
+time.sleep(5)
+time_now = datetime.now()
+
+delta_time = time_now - time_past
+print(delta_time.seconds)
+print(delta_time.seconds / 60)
+print(int(delta_time.seconds / 60))

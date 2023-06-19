@@ -11,6 +11,7 @@ GPIO.setup(output_button_pin, GPIO.IN, GPIO.PUD_UP)
 
 
 def button_is_pressed():
+    """Returns True if button is pressed"""
     if GPIO.input(output_button_pin) == 0:
         return True
     else:

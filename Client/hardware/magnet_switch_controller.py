@@ -11,6 +11,7 @@ GPIO.setup(magnet_switch_pin, GPIO.IN, GPIO.PUD_UP)
 
 
 def lid_is_closed():
+    """Returns True if lid is closed"""
     if GPIO.input(magnet_switch_pin) == 0:
         return True
     else:
