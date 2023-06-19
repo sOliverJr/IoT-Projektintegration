@@ -104,6 +104,8 @@ def change_cassette():
         continue
     print('[CLIENT] User closed the lid')
 
+    time.sleep(5)
+
     print('[CLIENT] Locking the lid')
     lock_lid()
     current_cassette_count = 0
