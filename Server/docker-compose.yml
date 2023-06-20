@@ -1,0 +1,21 @@
+version: '3.7'
+
+volumes:
+    redis-data:
+
+services:
+  mongo_db:
+    image: mongo:latest
+    restart: unless-stopped
+    ports:
+      - "5001:27017"
+    container_name: iot_mongo_db
+
+  redis_db:
+    image: redis:latest
+    restart: unless-stopped
+    volumes:
+        - 'redis-data:/data'
+    ports:
+      - "5002:6379"
+    container_name: iot_redis_db

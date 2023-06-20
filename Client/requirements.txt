@@ -1,0 +1,8 @@
+requests
+pytz
+
+# only works on rpi
+RPi.GPIO
+adafruit-circuitpython-motorkit
+gpiozero
+python-dotenv
