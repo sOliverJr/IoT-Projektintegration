@@ -158,7 +158,7 @@ def output_meds_thread(should_time):
     while barrier_is_closed():
         last_alarm_time = sound_controller(last_alarm_time)
 
-    time.sleep(1)
+    time.sleep(2)
 
     # Wait until meds are taken
     print('[OUTPUT MEDS THREAD] Waiting for user to take the meds')
