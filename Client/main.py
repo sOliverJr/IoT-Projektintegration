@@ -222,6 +222,7 @@ def start_client():
 
     except KeyboardInterrupt:
         print('[CLIENT] Exiting')
+        unlock_lid()
         pass
 
 
