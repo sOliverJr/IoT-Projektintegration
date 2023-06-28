@@ -74,6 +74,7 @@ export default function DeviceLoginScreen() {
               defaultText="Gerätepasswort"
               onValueChange={(i) => onValueChange(i, setDevicePassword)}
               value={devicePassword ?? ""}
+              secureTextEntry
             />
             <Text style={styles.errorText}>
               {wrongPassword

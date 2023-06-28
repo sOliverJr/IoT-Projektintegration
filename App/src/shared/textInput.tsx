@@ -6,6 +6,7 @@ type Props = {
   onValueChange: (value: string) => any;
   value: string;
   multiline?: boolean;
+  secureTextEntry?: boolean;
 };
 
 export default function InputField(props: Props) {
@@ -23,6 +24,7 @@ export default function InputField(props: Props) {
         placeholder={props.defaultText}
         value={props.value}
         onChangeText={props.onValueChange}
+        secureTextEntry={props.secureTextEntry}
         multiline={props.multiline}
         autoCorrect={false}
         autoComplete={"off"}
