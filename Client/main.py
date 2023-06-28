@@ -183,6 +183,7 @@ def output_meds_thread(should_time):
 
     print('[OUTPUT MEDS THREAD] Intake successfull, terminating thread')
 
+
 def update_cassette_thread():
     global current_cassette_id
     global env_file_path

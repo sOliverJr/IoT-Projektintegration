@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+import threading
 import time
 
 
@@ -29,10 +30,16 @@ def deactivate_light():
     blinking = False
 
 
-while True:
-    if blinking:
-        GPIO.output(led_1_pin, GPIO.HIGH)
-        GPIO.output(led_2_pin, GPIO.HIGH)
-        time.sleep(0.5)
-        GPIO.output(led_1_pin, GPIO.LOW)
-        GPIO.output(led_2_pin, GPIO.LOW)
+def blink_thread():
+    global blinking
+    while True:
+        if blinking:
+            GPIO.output(led_1_pin, GPIO.HIGH)
+            GPIO.output(led_2_pin, GPIO.HIGH)
+            time.sleep(1)
+            GPIO.output(led_1_pin, GPIO.LOW)
+            GPIO.output(led_2_pin, GPIO.LOW)
+
+
+x = threading.Thread(target=blink_thread, daemon=True)       # daemon=True -> thread gets killed when script terminates
+x.start()
