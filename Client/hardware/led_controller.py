@@ -39,6 +39,7 @@ def blink_thread():
             time.sleep(1)
             GPIO.output(led_1_pin, GPIO.LOW)
             GPIO.output(led_2_pin, GPIO.LOW)
+            time.sleep(1)
 
 
 x = threading.Thread(target=blink_thread, daemon=True)       # daemon=True -> thread gets killed when script terminates
