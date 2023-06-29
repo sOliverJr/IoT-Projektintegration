@@ -172,7 +172,7 @@ def output_meds_thread(should_time):
 
     current_time = datetime.now()
     delta_time = current_time - start_time
-    if int(delta_time.seconds / 60) >= 30:
+    if int(delta_time.seconds / 60) >= 15:
         print('[OUTPUT MEDS THREAD] Intake was late, posting message')
         post_intake_message(device_id, device_hash, should_time, get_time(), get_date())
 
