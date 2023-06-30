@@ -194,7 +194,7 @@ def update_cassette_thread():
         if 'cassette_id' in new_cassette and current_cassette_id != new_cassette['cassette_id']:
             print('[UPDATE CASSETTE THREAD] New cassette assigned to device')
             current_cassette_id = new_cassette['cassette_id']
-            set_key(dotenv_path=env_file_path, key_to_set="CURRENT_CASSETTE_ID", value_to_set=['cassette_id'])
+            set_key(dotenv_path=env_file_path, key_to_set="CURRENT_CASSETTE_ID", value_to_set=new_cassette['cassette_id'])
             cassette_changed = True
         time.sleep(1)
 
