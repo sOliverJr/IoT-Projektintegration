@@ -190,10 +190,10 @@ def update_cassette_thread():
     global cassette_changed
     print('[CLIENT] Thread (update_cassette_thread) started')
     while True:
-        new_cassette_id = get_device_cassette(device_id, device_hash)['cassette_id']
-        if current_cassette_id != new_cassette_id:
+        new_cassette = get_device_cassette(device_id, device_hash)
+        if 'cassette_id' in new_cassette and current_cassette_id != new_cassette['cassette_id']:
             print('[UPDATE CASSETTE THREAD] New cassette assigned to device')
-            current_cassette_id = new_cassette_id
+            current_cassette_id = new_cassette['cassette_id']
             set_key(dotenv_path=env_file_path, key_to_set="CURRENT_CASSETTE_ID", value_to_set=new_cassette_id)
             cassette_changed = True
         time.sleep(1)
