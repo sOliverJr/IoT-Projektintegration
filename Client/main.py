@@ -219,7 +219,8 @@ def start_client():
                 _reset_day()
                 last_intake_date = get_date()
             intake_is_due_result, due_time = intake_is_due()
-            if intake_is_due_result:
+            if True:
+                time.sleep(60)
                 x = threading.Thread(target=output_meds_thread, args=(due_time, ))
                 x.start()
 
