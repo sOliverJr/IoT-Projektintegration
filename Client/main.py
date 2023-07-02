@@ -27,6 +27,7 @@ todays_intakes = []
 current_cassette = None
 current_cassette_count = 0
 cassette_is_empty = False
+cassette_was_changed = False
 
 stepper_controller = StepperController()
 
@@ -87,6 +88,7 @@ def change_cassette():
     global current_cassette_count
     global cassette_changed
     global cassette_is_empty
+    global cassette_was_changed
     print('[CLIENT] Replacing device cassette')
     stepper_controller.reset_stepper()
 
@@ -111,6 +113,7 @@ def change_cassette():
     current_cassette_count = 0
     cassette_changed = False
     cassette_is_empty = False
+    cassette_was_changed = True
 
 
 def sound_controller(last_alarm_time):
@@ -205,6 +208,7 @@ def start_client():
     global current_cassette_count
     global cassette_fields
     global cassette_is_empty
+    global cassette_was_changed
     try:
         x = threading.Thread(target=update_cassette_thread, daemon=True)        # daemon=True -> thread gets killed when script terminates
         x.start()
@@ -219,8 +223,8 @@ def start_client():
                 _reset_day()
                 last_intake_date = get_date()
             intake_is_due_result, due_time = intake_is_due()
-            if True:
-                time.sleep(60)
+            if cassette_was_changed:
+                time.sleep(30)
                 x = threading.Thread(target=output_meds_thread, args=(due_time, ))
                 x.start()
 
