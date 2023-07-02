@@ -13,7 +13,7 @@ class StepperController:
 
     def rotate_stepper_forward(self, amount_steps: int):
         for i in range(amount_steps):
-            kit.stepper1.onestep(direction=stepper.FORWARD, style=stepper.DOUBLE)
+            kit.stepper1.onestep(direction=stepper.FORWARD, style=stepper.SINGLE)
 
             self.current_position += 1
             if self.current_position >= 200:
@@ -24,7 +24,7 @@ class StepperController:
 
     def rotate_stepper_backwards(self, amount_steps: int):
         for i in range(amount_steps):
-            kit.stepper1.onestep(direction=stepper.BACKWARD, style=stepper.DOUBLE)
+            kit.stepper1.onestep(direction=stepper.BACKWARD, style=stepper.SINGLE)
 
             self.current_position -= 1
             if self.current_position < 0:
@@ -37,7 +37,7 @@ class StepperController:
         steps_to_reset = (self.current_position - self.steps_for_revolution) * -1
         print(steps_to_reset)
         while self.current_position != 0:
-            kit.stepper1.onestep(direction=stepper.BACKWARD, style=stepper.DOUBLE)
+            kit.stepper1.onestep(direction=stepper.BACKWARD, style=stepper.SINGLE)
             self.current_position -= 1
             time.sleep(0.2)
         kit.stepper1.release()
