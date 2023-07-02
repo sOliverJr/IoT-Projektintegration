@@ -44,20 +44,22 @@ export default function DeviceLoginScreen() {
   const onScan = (input: string) => {
     const split = input.split("/");
 
+    console.log(split);
+
     setDeviceId(split[0]);
     setDevicePassword(split[1]);
 
-    tryLogin();
+    tryLogin(split[0], split[1]);
   };
 
-  const tryLogin = async () => {
+  const tryLogin = async (id: string, password: string) => {
     setIsLoading(true);
 
     axios
       .request({
         method: "GET",
-        url: `http://${CONFIG.serverIp}:${CONFIG.serverPort}/auth_device/${deviceId}`,
-        headers: { devicePassword: devicePassword },
+        url: `http://${CONFIG.serverIp}:${CONFIG.serverPort}/auth_device/${id}`,
+        headers: { devicePassword: password },
       })
       .then((response) => {
         if (response.status === 200) {
@@ -158,7 +160,7 @@ export default function DeviceLoginScreen() {
                 </View>
                 <TouchableOpacity
                   onPress={() => {
-                    tryLogin();
+                    tryLogin(deviceId, devicePassword);
                   }}
                   disabled={
                     deviceId === "" || devicePassword === "" || isLoading
