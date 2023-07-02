@@ -172,7 +172,7 @@ def output_meds_thread(should_time):
 
     current_time = datetime.now()
     delta_time = current_time - start_time
-    if int(delta_time.seconds / 60) >= 30:
+    if int(delta_time.seconds / 60) >= 15:
         print('[OUTPUT MEDS THREAD] Intake was late, posting message')
         post_intake_message(device_id, device_hash, should_time, get_time(), get_date())
 
@@ -183,17 +183,18 @@ def output_meds_thread(should_time):
 
     print('[OUTPUT MEDS THREAD] Intake successfull, terminating thread')
 
+
 def update_cassette_thread():
     global current_cassette_id
     global env_file_path
     global cassette_changed
     print('[CLIENT] Thread (update_cassette_thread) started')
     while True:
-        new_cassette_id = get_device_cassette(device_id, device_hash)['cassette_id']
-        if current_cassette_id != new_cassette_id:
+        new_cassette = get_device_cassette(device_id, device_hash)
+        if 'cassette_id' in new_cassette and current_cassette_id != new_cassette['cassette_id']:
             print('[UPDATE CASSETTE THREAD] New cassette assigned to device')
-            current_cassette_id = new_cassette_id
-            set_key(dotenv_path=env_file_path, key_to_set="CURRENT_CASSETTE_ID", value_to_set=new_cassette_id)
+            current_cassette_id = new_cassette['cassette_id']
+            set_key(dotenv_path=env_file_path, key_to_set="CURRENT_CASSETTE_ID", value_to_set=new_cassette['cassette_id'])
             cassette_changed = True
         time.sleep(1)
 
