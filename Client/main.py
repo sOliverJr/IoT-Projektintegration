@@ -227,6 +227,7 @@ def start_client():
                 time.sleep(30)
                 x = threading.Thread(target=output_meds_thread, args=(due_time, ))
                 x.start()
+                cassette_was_changed = False
 
     except KeyboardInterrupt:
         print('[CLIENT] Exiting')
